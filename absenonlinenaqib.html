@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Absensi Program Harian Santri Fajrul Islam</title>
+<title>Absensi Program Harian Santri Fajrul Islam - Naqib</title>
 <style>
   body{font-family:Arial, sans-serif;padding:18px;background:#f7f7f7}
   .card{background:#fff;border:1px solid #e6e6e6;padding:18px;border-radius:10px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
@@ -18,11 +18,12 @@
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .col{flex:1;min-width:150px}
   .muted{color:#777;font-size:0.9rem}
+  .sectionTitle{font-weight:bold;margin-bottom:6px}
   @media(max-width:600px){ .row{flex-direction:column;align-items:stretch} }
 </style>
 </head>
 <body>
-  <h2>Absensi Program Harian Santri Fajrul Islam</h2>
+  <h2>Absensi Program Harian Santri Fajrul Islam - Naqib</h2>
 
   <!-- LOGIN -->
   <div class="card" id="loginPage">
@@ -32,7 +33,7 @@
     <label>Kode Akses:</label>
     <input type="password" id="kode" /><br><br>
     <button class="btn" onclick="login()">Masuk</button>
-    <p class="small">Isi dengan teliti dan jujur</p>
+    <p class="small">Isi dengan tiliti dan jujur!</p>
   </div>
 
   <!-- ABSENSI NAQIB -->
@@ -92,6 +93,7 @@
     </div>
 
     <div style="margin-top:10px;">
+      <button class="btn" onclick="rekapHarian()">Rekap Harian</button>
       <button class="btn" onclick="rekapPekanan()">Rekap Per Pekan</button>
       <button class="btn" onclick="rekapBulanan()">Rekap Per Bulan</button>
       <button class="btn alt" onclick="tampilkanRekap()">Tampilkan Semua (rentang)</button>
@@ -258,7 +260,6 @@ function loadFilteredRange(callback){
 
   loadAllAbsensi(data=>{
     const filtered = data.filter(it=>{
-      // if tanggal missing, exclude
       if(!it.tanggal) return false;
       const d = parseISO(it.tanggal);
       if(d < rf.from || d > rf.to) return false;
@@ -267,6 +268,68 @@ function loadFilteredRange(callback){
       return true;
     });
     callback(filtered);
+  });
+}
+
+// ---------------------- REKAP HARIAN (Gabungan Program + Per Naqib) ----------------------
+function rekapHarian(){
+  // for daily: admin can set fromDate == toDate (single date). But function supports any range: it groups by tanggal and for each date shows programs
+  loadFilteredRange(list=>{
+    if(!list) return;
+    if(list.length===0){ document.getElementById('rekapArea').innerHTML = '<b>Tidak ada data pada rentang ini.</b>'; return; }
+
+    // group by tanggal -> program -> entries
+    const byDate = {};
+    list.forEach(it=>{
+      const t = it.tanggal;
+      if(!byDate[t]) byDate[t] = {};
+      if(!byDate[t][it.program]) byDate[t][it.program] = [];
+      byDate[t][it.program].push(it);
+    });
+
+    let html = '<h4>Rekap Harian (Per Program → Per Naqib)</h4>';
+
+    const dates = Object.keys(byDate).sort();
+    dates.forEach(date=>{
+      html += `<div style="margin-top:12px;padding:10px;border:1px solid #eee;border-radius:8px"><b>🔹 Tanggal: ${date}</b>`;
+      const programs = Object.keys(byDate[date]).sort();
+      programs.forEach(prog=>{
+        const arr = byDate[date][prog];
+        // overall program summary for this date
+        const total = arr.length;
+        const hadir = arr.filter(x=>x.status==='Hadir').length;
+        const izin = arr.filter(x=>x.status==='Izin').length;
+        const sakit = arr.filter(x=>x.status==='Sakit').length;
+        const alfa = arr.filter(x=>x.status==='Alfa').length;
+        const persen = total? ((hadir/total)*100).toFixed(1) : 0;
+
+        html += `<div style="margin-top:8px;padding:8px;border:1px dashed #ddd;border-radius:6px">
+                  <div class="sectionTitle">Program: ${prog} — Total:${total} | Hadir:${hadir} Izin:${izin} Sakit:${sakit} Alfa:${alfa} — <b>${persen}% hadir</b></div>`;
+
+        // group by naqib within this program
+        const naqibMap = {};
+        arr.forEach(r=>{
+          if(!naqibMap[r.naqib]) naqibMap[r.naqib] = {H:0,I:0,S:0,A:0,total:0};
+          naqibMap[r.naqib].total++;
+          if(r.status==='Hadir') naqibMap[r.naqib].H++;
+          if(r.status==='Izin') naqibMap[r.naqib].I++;
+          if(r.status==='Sakit') naqibMap[r.naqib].S++;
+          if(r.status==='Alfa') naqibMap[r.naqib].A++;
+        });
+
+        html += `<div style="overflow:auto;margin-top:6px"><table><thead><tr><th>Naqib</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th><th>% Hadir</th></tr></thead><tbody>`;
+        Object.keys(naqibMap).sort().forEach(nq=>{
+          const v = naqibMap[nq];
+          const p = v.total? ((v.H / v.total) * 100).toFixed(1) : '0.0';
+          html += `<tr><td>${nq}</td><td>${v.H}</td><td>${v.I}</td><td>${v.S}</td><td>${v.A}</td><td>${p}%</td></tr>`;
+        });
+        html += `</tbody></table></div>`; // end table
+        html += `</div>`; // end program box
+      }); // end programs loop
+      html += `</div>`; // end date box
+    }); // end dates loop
+
+    document.getElementById('rekapArea').innerHTML = html;
   });
 }
 
@@ -442,6 +505,26 @@ function exportPDF(){
   doc.save(`rekap_${from}_${to}.pdf`);
 }
 
+// ---------------------- HELPERS (date functions) ----------------------
+function toISODate(d){
+  const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function parseISO(dstr){ // expect YYYY-MM-DD
+  const parts = dstr.split('-').map(x=>parseInt(x,10));
+  return new Date(parts[0], parts[1]-1, parts[2]);
+}
+function weekStart(date){
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = (day === 0) ? -6 : (1 - day);
+  d.setDate(d.getDate() + diff);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function weekEndFromStart(ws){
+  const e = new Date(ws); e.setDate(e.getDate() + 6); return e;
+}
+
 // ---------------------- PLACEHOLDER: functions loadAllAbsensi & simpanOnline are from Firebase module below ----------------------
 
 </script>
@@ -488,4 +571,3 @@ function exportPDF(){
 
 </body>
 </html>
-
