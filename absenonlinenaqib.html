@@ -17,6 +17,7 @@
 </style>
 </head>
 <body>
+
 <h2>Absensi Program Harian Santri Fajrul Islam</h2>
 
 <!-- LOGIN -->
@@ -38,6 +39,7 @@
 <div class="card" id="absensiPage" style="display:none;">
   <h3 id="naqibLabel">Form Absensi</h3>
   <label>Tanggal: <input type="date" id="tanggal"></label><br><br>
+
   <label>Program:</label>
   <select id="program">
     <option>TAHAJJUD</option>
@@ -54,10 +56,14 @@
 
   <h4>Daftar Santri</h4>
   <button class="btn" onclick="checkAll()">Hadir Semua</button>
+
   <table>
-    <thead><tr><th>Nama</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr></thead>
+    <thead>
+      <tr><th>Nama</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr>
+    </thead>
     <tbody id="santriTable"></tbody>
   </table>
+
   <br>
   <button class="btn" onclick="simpan()">Simpan</button>
   <button class="btn alt" onclick="logout()">Logout</button>
@@ -66,10 +72,12 @@
 <!-- ADMIN -->
 <div class="card" id="adminPage" style="display:none;">
   <h3>Halaman Admin</h3>
+
   <label>Pilih Naqib:</label>
   <select id="adminNaqib">
     <option value="">Semua Naqib</option>
   </select>
+
   <br><br>
   <label>Periode:</label>
   <select id="periode">
@@ -77,17 +85,19 @@
     <option value="mingguan">Mingguan</option>
     <option value="bulanan">Bulanan</option>
   </select>
+
   <button class="btn" onclick="loadRekap()">Tampilkan Rekap</button>
   <button class="btn alt" onclick="exportCSV()">Export CSV</button>
 
   <h4>Hasil Rekap</h4>
   <div id="rekap">Memuat rekap...</div>
+
   <br>
   <button class="btn" onclick="logout()">Logout</button>
 </div>
 
 <script>
-// data pengguna & santri
+// =========== DATA USER ================
 const users = [
   { id: 'Admin', label: 'Admin', role: 'admin', code: 'ADMIN123' },
   { id: 'Regen', label: 'Naqib Regen', role: 'naqib', code: 'REGEN111', naqibName: 'Regen' },
@@ -99,50 +109,67 @@ const users = [
   { id: 'Evita', label: 'Naqibah Evita', role: 'naqib', code: 'EVITA111', naqibName: 'Evita' }
 ];
 
+// =========== DATA SANTRI ================
 const dataSantri = {
   'Regen': ["AHMAD MAULANA","JUANDA NUR ILHAM","NAJMIHADI SYAUQII TAMAAM","NIZAM KABISAT","MOHAMMAD IKHSAN HAIRULI","REYFAS RAMADHAN","EZA FEBRI AL FADZRI","HAFIDZ AL ROZI","ANDES AFENDRA","FEBRI GHALIH AL FAROBI","DANANG PRASDITYA SANTOSO","MUHAMMAD RAID MAHRUS","MUHAMMAD DIRGATAMA","CANZA RYANDA HUTASUHUT","FALIZH DAFFA QATRUNNADA","DAFFA AL MUSYARI","RAFI RAMADHAN","WAHYU REYDINATA","AKBAR PRAYOGA","VERY SYACH","MUHAMMAD AL FALAH"],
+
   'Kamal': ["ADITYA PUTRA IBRAHIM","AIRLANGGA AZKA ABQORI","AQIELA MARSYAH","BRILLY HANDRIAN","DARREN ATHAYA","DZIKRI MUDHOFFAR","ELLENO QUTHBIE HERMAWAN","FADIL NURHALIM","GABRIEL AL FATIH","HADINATA SAPUTRA","MIKO VAJAR","MUHAMMAD ALMISKY PRATAMA","MUHAMMAD AQIL RIDHO","MUHAMMAD IZAM SAPUTRA","MUHAMMAD SYAKIR HUTABARAT","MUHAMMAD ZIYAD ZHAZHA","MUHAMMAD YASIR AL FAZAR JHIRA","RAFA"],
+
   'Favian': ["ANGGA PRATAMA PUTRA","PRAWIRO PUJO TUNGGAL JATI","MUHAMMAD MARPIN","MARFEL SAPUTRA","MELDI NOVRIANSYAH","FAUZAN IBNI JABAR","MUHAMMAD FADHIL BUANA","QHEIZAN ALQIZA ARISDA","REZFY FAKHRYAZKA","MIKA RAHEL YUSUF","KI AGUS MUHAMMAD ABDULLAH SHIDDIQ AGTSALI","ARYA DIFA ALSYA","REYNALDI MALIK IBRAHIM ALFARIDZI","MUHAMMAD XAVI NF","MUHAMMAD FAISAL FIKRIANSYAH","HAFIDZ ALRIZKY","NAUFAL AKBAR ALKHATIRI","FARAZH SAYYID PUTRA KENEGA","SYAHRUL RAMADHAN","LUTHFAN ADZAKI","MUHAMMAD ABIL IRWANSYAH","ALIF SAMUDRA","FAHRIE OKTAVIRANO FITRIS"],
+
   'Dimas': ["GHOZY FATURRAHMAN","MUHAMMAD THOORIQ","AHMAD RIYADI","ALIF MUHAMMAD YUSUF","BASRI AL HAZIQ ZULFAHMI","MUHAMMAD FAQIH HAFIDZALLAH","ABDULLAH MUKTI HAFIDZALLAH","DEDI SETIADI","FAKHRI AL MUZAKKI","ILHAM MUKMIN AL FARABI","MUHAMMAD ALLAM NUR HUSAIN","MUHAMMAD FIRAAS AL INSYIROH","NABIL NAJMI","SATRIO ABIMAYU","TEGAR HIDAYAT","WAFII FADHLURROHMAN","MUHAMMAD RIJALUL KAMIL","ALVIN HERFIANTINO","ZAHIR ZIBRAN","RADEN AZAA PANCA PUTRA"],
+
   'Shafwan': ["AHMAD FARHAAN","ANUGRAH PRATAMA","CAHYIS ISZAM","DIKKI KURNIAWAN","FAHRY AKBAR RAMDHANI","HABIB RAMADHAN","IHZA TRINANDI","ILHAM","M.ARYA MAHDI WAFI EL-FAUZANI","MAHESA AULIA GIFFARI","MUHAMAD YUSUF ARROSIYD","MUHAMMAD RAYYAN HAFIZ","MUHAMMAD USAMAH","NAFIS","RAKA SEPTIAN","RENAL MARTIN","ROHADIN FIRDAUS AL QAUSAR","ROID AFDAL","ZULFAKIH HAERUNNASIHIN"],
+
   'Fatimah': ["NILAM CAHYA","QELZA RAMADHANI ATH THAHIRAH","ASHIFA FITRI RAMADHONI","ADIBA AILA KHANZA","AISYAH NUR KHALIFAH","NYAYU MARLITSA ARDHANI","WILDA","WINDY WINDARI","ALFERA DESTIA","AISYAH NURUL AULIA","NESSYA RAMADHANY","AMIRAH BALQIS RAHADATUL A'ISYAH","EARLYTA ARSYFA SALSABILA","DAFIA NAFLA SYAKIRA","ANISYA SEPTIANI"],
+
   'Evita': ["BILQIS NUR ANISAH","JESSICA PUTRY AYRA","GHENIS ANDIENTIAZ","DINA RUHAYAH","MALWA SHAGIRAH","PITRI RAMADANI","GRINNETA NALANI PUTRI","INAYAH NOURAH ANINDYA","SHELENA","FITRAH KIRANA"]
 };
 
-// simulated DB
+// =========== DB SIMULASI ============
 let absensiDB = [];
 let currentUser = null;
 
-// init UI dropdowns
+// INIT DROPDOWN
 function init(){
   const sel = document.getElementById('userSelect');
   sel.innerHTML = '<option value="">-- Pilih User --</option>';
-  users.forEach(u => { const o = document.createElement('option'); o.value = u.id; o.text = u.label; sel.appendChild(o); });
+  users.forEach(u => {
+    const o = document.createElement('option');
+    o.value = u.id;
+    o.text = u.label;
+    sel.appendChild(o);
+  });
 
   const adminSel = document.getElementById('adminNaqib');
   adminSel.innerHTML = '<option value="">Semua Naqib</option>';
-  Object.keys(dataSantri).forEach(k=>{ const o = document.createElement('option'); o.value = k; o.text = k; adminSel.appendChild(o); });
+  Object.keys(dataSantri).forEach(k=>{
+    const o = document.createElement('option');
+    o.value = k;
+    o.text = k;
+    adminSel.appendChild(o);
+  });
 }
 window.addEventListener('DOMContentLoaded', init);
 
-// ---- LOGIN function (fixes previous error) ----
+// ========== LOGIN ==========
 function login(){
   const userId = document.getElementById('userSelect').value;
   const kode = document.getElementById('kode').value.trim();
+
   if(!userId) return alert('Pilih user.');
   const user = users.find(u=>u.id === userId);
   if(!user) return alert('User tidak ditemukan.');
   if(kode !== user.code) return alert('Kode akses salah.');
 
   currentUser = user;
+
   if(user.role === 'admin'){
-    // show admin
     document.getElementById('loginPage').style.display='none';
     document.getElementById('absensiPage').style.display='none';
     document.getElementById('adminPage').style.display='block';
     loadRekap();
-  } else if(user.role === 'naqib'){
-    // open naqib page
+  } else {
     document.getElementById('loginPage').style.display='none';
     document.getElementById('adminPage').style.display='none';
     document.getElementById('absensiPage').style.display='block';
@@ -150,36 +177,60 @@ function login(){
   }
 }
 
+// ========== OPEN NAQIB PAGE ==========
 function openNaqibPage(user){
   document.getElementById('naqibLabel').innerText = 'Naqib: ' + user.label;
+
   const santri = dataSantri[user.naqibName] || [];
-  const body = document.getElementById('santriTable'); body.innerHTML = '';
+  const body = document.getElementById('santriTable');
+  body.innerHTML = '';
+
   santri.forEach(n=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `\n      <td>${n}</td>\n      <td><input type="radio" name="${escapeName(n)}" value="Hadir" checked></td>\n      <td><input type="radio" name="${escapeName(n)}" value="Izin"></td>\n      <td><input type="radio" name="${escapeName(n)}" value="Sakit"></td>\n      <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>\n    `;
+    tr.innerHTML = `
+      <td>${n}</td>
+      <td><input type="radio" name="${escapeName(n)}" value="Hadir" checked></td>
+      <td><input type="radio" name="${escapeName(n)}" value="Izin"></td>
+      <td><input type="radio" name="${escapeName(n)}" value="Sakit"></td>
+      <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>
+    `;
     body.appendChild(tr);
   });
 }
 
-function escapeName(n){ return n.replace(/[^a-z0-9]/gi,'_'); }
+function escapeName(n){
+  return n.replace(/[^a-z0-9]/gi,'_');
+}
 
-function checkAll(){ document.querySelectorAll('input[value="Hadir"]').forEach(r=>r.checked=true); }
+function checkAll(){
+  document.querySelectorAll('input[value="Hadir"]').forEach(r=>r.checked=true);
+}
 
+// ========== SIMPAN ==========
 function simpan(){
-  if(!currentUser || currentUser.role !== 'naqib') return alert('Hanya naqib yang dapat menyimpan absensi.');
+  if(!currentUser || currentUser.role !== 'naqib')
+    return alert('Hanya naqib yang dapat menyimpan absensi.');
+
   const tanggal = document.getElementById('tanggal').value || new Date().toISOString().slice(0,10);
   const program = document.getElementById('program').value;
   const naqib = currentUser.naqibName;
+
   const rows = document.querySelectorAll('#santriTable tr');
+
   rows.forEach(row=>{
     const nama = row.children[0].innerText;
     const st = document.querySelector(`input[name="${escapeName(nama)}"]:checked`);
     const status = st ? st.value : 'Hadir';
-    absensiDB.push({ tanggal, program, naqib, nama, status });
+
+    absensiDB.push({
+      tanggal, program, naqib, nama, status
+    });
   });
+
   alert('Absensi tersimpan. Total data: ' + absensiDB.length);
 }
 
+// ========== LOGOUT ==========
 function logout(){
   currentUser = null;
   document.getElementById('kode').value = '';
@@ -189,60 +240,113 @@ function logout(){
   document.getElementById('adminPage').style.display='none';
 }
 
-function resetApp(){ absensiDB = []; logout(); alert('Reset selesai'); }
+function resetApp(){
+  absensiDB = [];
+  logout();
+  alert('Reset selesai');
+}
 
-// --- Admin: rekap, tabel, persen, mingguan/bulanan (simple grouping)
+// ========== ADMIN: REKAP ==========
 function loadRekap(){
   const filterNaqib = document.getElementById('adminNaqib').value;
-  const periode = document.getElementById('periode').value; // harian/mingguan/bulanan
+  const periode = document.getElementById('periode').value;
 
-  if(absensiDB.length === 0){ document.getElementById('rekap').innerHTML = '<b>Belum ada data absensi.</b>'; return; }
+  if(absensiDB.length === 0){
+    document.getElementById('rekap').innerHTML = '<b>Belum ada data absensi.</b>';
+    return;
+  }
 
-  // filter by naqib
+  // filter naqib
   let filtered = absensiDB.slice();
   if(filterNaqib) filtered = filtered.filter(r=> r.naqib === filterNaqib);
 
-  // grouping by periode (for simplicity: we will aggregate all matching rows if periode selected)
-  // total counts
+  // ringkasan total
   const total = filtered.length;
   const hadir = filtered.filter(r=> r.status==='Hadir').length;
   const izin = filtered.filter(r=> r.status==='Izin').length;
   const sakit = filtered.filter(r=> r.status==='Sakit').length;
   const alfa = filtered.filter(r=> r.status==='Alfa').length;
+
   const persen = total ? ((hadir/total)*100).toFixed(1) : 0;
 
-  let html = `<p><b>Total Data:</b> ${total}<br><b>Total Hadir:</b> ${hadir}<br><b>Persentase Kehadiran:</b> <b>${persen}%</b></p>`;
+  let html = `
+    <p><b>Total Data:</b> ${total}<br>
+    <b>Total Hadir:</b> ${hadir}<br>
+    <b>Persentase Kehadiran:</b> <b>${persen}%</b></p>
+  `;
 
-  // per naqib summary
   html += '<hr><h4>Per Naqib</h4>';
+
   Object.keys(dataSantri).forEach(nq=>{
     const d = absensiDB.filter(r=> r.naqib === nq);
-    if(d.length===0){ html += `<p><b>${nq}</b>: Tidak ada data.</p>`; return; }
+
+    if(d.length === 0){
+      html += `<p><b>${nq}</b>: Tidak ada data.</p>`;
+      return;
+    }
+
     const H = d.filter(x=> x.status==='Hadir').length;
     const I = d.filter(x=> x.status==='Izin').length;
     const S = d.filter(x=> x.status==='Sakit').length;
     const A = d.filter(x=> x.status==='Alfa').length;
     const P = d.length ? ((H/d.length)*100).toFixed(1) : 0;
+
     html += `<p><b>${nq}</b> — H:${H} | I:${I} | S:${S} | A:${A} | <b>${P}% hadir</b></p>`;
   });
 
-  // tabel lengkap (filtered)
-  html += '<hr><h4>Tabel Lengkap</h4><table><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr>';
-  filtered.forEach(r=>{ html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`; });
+  // tabel detail
+  html += '<hr><h4>Tabel Lengkap</h4>';
+  html += '<table><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr>';
+
+  filtered.forEach(r=>{
+    html += `<tr>
+      <td>${r.tanggal}</td>
+      <td>${r.program}</td>
+      <td>${r.naqib}</td>
+      <td>${r.nama}</td>
+      <td>${r.status}</td>
+    </tr>`;
+  });
+
   html += '</table>';
 
   document.getElementById('rekap').innerHTML = html;
 }
 
+// ========== EXPORT CSV (SUDAH DIBENARKAN UNTUK EXCEL INDONESIA) ==========
 function exportCSV(){
-  if(absensiDB.length===0) return alert('Tidak ada data');
-  const rows = [['tanggal','program','naqib','nama','status']];
-  absensiDB.forEach(r=> rows.push([r.tanggal,r.program,r.naqib,r.nama,r.status]));
-  const csv = rows.map(r => r.map(c=> '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
+  if(absensiDB.length === 0){
+    alert('Tidak ada data');
+    return;
+  }
+
+  let csv = "tanggal;program;naqib;nama;status\n";
+
+  absensiDB.forEach(r => {
+    const row = [
+      r.tanggal,
+      r.program,
+      r.naqib,
+      r.nama,
+      r.status
+    ]
+    .map(v => `"${String(v).replace(/"/g,'""')}"`)
+    .join(';');
+
+    csv += row + "\n";
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'absensi.csv'; a.click(); URL.revokeObjectURL(url);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "absensi.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
+
 </script>
 </body>
 </html>
