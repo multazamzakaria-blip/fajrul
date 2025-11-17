@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Absensi Program Harian Santri Fajrul Islam</title>
+
 <style>
   body{font-family:Arial, sans-serif;padding:20px;background:#f7f7f7}
   .card{background:white;border:1px solid #e0e0e0;padding:20px;border-radius:10px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
@@ -14,10 +15,11 @@
   label{display:inline-block;margin-bottom:6px}
   h2{margin-top:0}
   .small{color:#666;font-size:0.95em}
-  .controls{display:flex;gap:10px;align-items:center}
 </style>
 </head>
+
 <body>
+
 <h2>Absensi Program Harian Santri Fajrul Islam</h2>
 
 <!-- LOGIN -->
@@ -26,29 +28,20 @@
   <label>Pilih User:</label>
   <select id="userSelect">
     <option value="">-- Pilih User --</option>
-    <option value="Admin">Admin</option>
-    <option value="Regen">Naqib Regen</option>
-    <option value="Kamal">Naqib Kamal</option>
-    <option value="Favian">Naqib Favian</option>
-    <option value="Dimas">Naqib Dimas</option>
-    <option value="Shafwan">Naqib Shafwan</option>
-    <option value="Fatimah">Naqibah Fatimah</option>
-    <option value="Evita">Naqibah Evita</option>
   </select>
   <br><br>
   <label>Kode Akses:</label>
   <input type="password" id="kode"><br><br>
-  <div class="controls">
-    <button id="btnLogin" class="btn">Masuk</button>
-    <button id="btnReset" class="btn alt">Reset (debug)</button>
-  </div>
-  <p class="small">Isi dengan jujur dan teliti. Admin: <b>ADMIN123</b>. Naqib contoh: REGEN111, KAMAL111, dll.</p>
+  <button class="btn" onclick="login()">Masuk</button>
+  <p class="small">Isi dengan jujur dan teliti</p>
 </div>
 
 <!-- ABSENSI NAQIB -->
 <div class="card" id="absensiPage" style="display:none;">
   <h3 id="naqibLabel">Form Absensi</h3>
+
   <label>Tanggal: <input type="date" id="tanggal"></label><br><br>
+
   <label>Program:</label>
   <select id="program">
     <option>TAHAJJUD</option>
@@ -64,52 +57,43 @@
   </select>
 
   <h4>Daftar Santri</h4>
-  <button id="btnCheckAll" class="btn">Hadir Semua</button>
+  <button class="btn" onclick="checkAll()">Hadir Semua</button>
+
   <table>
-    <thead><tr><th>Nama</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr></thead>
+    <thead>
+      <tr><th>Nama</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr>
+    </thead>
     <tbody id="santriTable"></tbody>
   </table>
+
   <br>
-  <div class="controls">
-    <button id="btnSimpan" class="btn">Simpan</button>
-    <button id="btnLogout1" class="btn alt">Logout</button>
-  </div>
+  <button class="btn" onclick="simpan()">Simpan</button>
+  <button class="btn alt" onclick="logout()">Logout</button>
 </div>
 
 <!-- ADMIN -->
 <div class="card" id="adminPage" style="display:none;">
   <h3>Halaman Admin</h3>
+
   <label>Pilih Naqib:</label>
   <select id="adminNaqib">
     <option value="">Semua Naqib</option>
-    <option value="Regen">Regen</option>
-    <option value="Kamal">Kamal</option>
-    <option value="Favian">Favian</option>
-    <option value="Dimas">Dimas</option>
-    <option value="Shafwan">Shafwan</option>
-    <option value="Fatimah">Fatimah</option>
-    <option value="Evita">Evita</option>
   </select>
+
   <br><br>
-  <label>Periode:</label>
-  <select id="periode">
-    <option value="harian">Harian</option>
-    <option value="mingguan">Mingguan</option>
-    <option value="bulanan">Bulanan</option>
-  </select>
-  <button id="btnRekap" class="btn">Tampilkan Rekap</button>
-  <button id="btnExportCSV" class="btn alt">Export CSV</button>
-  <button id="btnExportPDF" class="btn" style="background:#6a1b9a;margin-left:8px;">Export PDF</button>
+
+  <button class="btn" onclick="loadRekap()">Tampilkan Rekap</button>
+  <button class="btn alt" onclick="exportCSV()">Export CSV</button>
 
   <h4>Hasil Rekap</h4>
   <div id="rekap">Memuat rekap...</div>
+
   <br>
-  <button id="btnLogout2" class="btn">Logout</button>
+  <button class="btn" onclick="logout()">Logout</button>
 </div>
 
-<!-- SCRIPT (all functions defined before attaching handlers) -->
 <script>
-// data pengguna & santri
+// ======================= DATA USER & SANTRI =======================
 const users = [
   { id: 'Admin', label: 'Admin', role: 'admin', code: 'ADMIN123' },
   { id: 'Regen', label: 'Naqib Regen', role: 'naqib', code: 'REGEN111', naqibName: 'Regen' },
@@ -122,280 +106,225 @@ const users = [
 ];
 
 const dataSantri = {
-  'Regen': ["AHMAD MAULANA","JUANDA NUR ILHAM","NAJMIHADI SYAUQII TAMAAM","NIZAM KABISAT","MOHAMMAD IKHSAN HAIRULI","REYFAS RAMADHAN","EZA FEBRI AL FADZRI","HAFIDZ AL ROZI","ANDES AFENDRA","FEBRI GHALIH AL FAROBI","DANANG PRASDITYA SANTOSO","MUHAMMAD RAID MAHRUS","MUHAMMAD DIRGATAMA","CANZA RYANDA HUTASUHUT","FALIZH DAFFA QATRUNNADA","DAFFA AL MUSYARI","RAFI RAMADHAN","WAHYU REYDINATA","AKBAR PRAYOGA","VERY SYACH","MUHAMMAD AL FALAH"],
-  'Kamal': ["ADITYA PUTRA IBRAHIM","AIRLANGGA AZKA ABQORI","AQIELA MARSYAH","BRILLY HANDRIAN","DARREN ATHAYA","DZIKRI MUDHOFFAR","ELLENO QUTHBIE HERMAWAN","FADIL NURHALIM","GABRIEL AL FATIH","HADINATA SAPUTRA","MIKO VAJAR","MUHAMMAD ALMISKY PRATAMA","MUHAMMAD AQIL RIDHO","MUHAMMAD IZAM SAPUTRA","MUHAMMAD SYAKIR HUTABARAT","MUHAMMAD ZIYAD ZHAZHA","MUHAMMAD YASIR AL FAZAR JHIRA","RAFA"],
-  'Favian': ["ANGGA PRATAMA PUTRA","PRAWIRO PUJO TUNGGAL JATI","MUHAMMAD MARPIN","MARFEL SAPUTRA","MELDI NOVRIANSYAH","FAUZAN IBNI JABAR","MUHAMMAD FADHIL BUANA","QHEIZAN ALQIZA ARISDA","REZFY FAKHRYAZKA","MIKA RAHEL YUSUF","KI AGUS MUHAMMAD ABDULLAH SHIDDIQ AGTSALI","ARYA DIFA ALSYA","REYNALDI MALIK IBRAHIM ALFARIDZI","MUHAMMAD XAVI NF","MUHAMMAD FAISAL FIKRIANSYAH","HAFIDZ ALRIZKY","NAUFAL AKBAR ALKHATIRI","FARAZH SAYYID PUTRA KENEGA","SYAHRUL RAMADHAN","LUTHFAN ADZAKI","MUHAMMAD ABIL IRWANSYAH","ALIF SAMUDRA","FAHRIE OKTAVIRANO FITRIS"],
-  'Dimas': ["GHOZY FATURRAHMAN","MUHAMMAD THOORIQ","AHMAD RIYADI","ALIF MUHAMMAD YUSUF","BASRI AL HAZIQ ZULFAHMI","MUHAMMAD FAQIH HAFIDZALLAH","ABDULLAH MUKTI HAFIDZALLAH","DEDI SETIADI","FAKHRI AL MUZAKKI","ILHAM MUKMIN AL FARABI","MUHAMMAD ALLAM NUR HUSAIN","MUHAMMAD FIRAAS AL INSYIROH","NABIL NAJMI","SATRIO ABIMAYU","TEGAR HIDAYAT","WAFII FADHLURROHMAN","MUHAMMAD RIJALUL KAMIL","ALVIN HERFIANTINO","ZAHIR ZIBRAN","RADEN AZAA PANCA PUTRA"],
-  'Shafwan': ["AHMAD FARHAAN","ANUGRAH PRATAMA","CAHYIS ISZAM","DIKKI KURNIAWAN","FAHRY AKBAR RAMDHANI","HABIB RAMADHAN","IHZA TRINANDI","ILHAM","M.ARYA MAHDI WAFI EL-FAUZANI","MAHESA AULIA GIFFARI","MUHAMAD YUSUF ARROSIYD","MUHAMMAD RAYYAN HAFIZ","MUHAMMAD USAMAH","NAFIS","RAKA SEPTIAN","RENAL MARTIN","ROHADIN FIRDAUS AL QAUSAR","ROID AFDAL","ZULFAKIH HAERUNNASIHIN"],
-  'Fatimah': ["NILAM CAHYA","QELZA RAMADHANI ATH THAHIRAH","ASHIFA FITRI RAMADHONI","ADIBA AILA KHANZA","AISYAH NUR KHALIFAH","NYAYU MARLITSA ARDHANI","WILDA","WINDY WINDARI","ALFERA DESTIA","AISYAH NURUL AULIA","NESSYA RAMADHANY","AMIRAH BALQIS RAHADATUL A'ISYAH","EARLYTA ARSYFA SALSABILA","DAFIA NAFLA SYAKIRA","ANISYA SEPTIANI"],
-  'Evita': ["BILQIS NUR ANISAH","JESSICA PUTRY AYRA","GHENIS ANDIENTIAZ","DINA RUHAYAH","MALWA SHAGIRAH","PITRI RAMADANI","GRINNETA NALANI PUTRI","INAYAH NOURAH ANINDYA","SHELENA","FITRAH KIRANA"]
+  "Regen": ["AHMAD MAULANA","JUANDA NUR ILHAM","NAJMIHADI SYAUQII TAMAAM","NIZAM KABISAT","MOHAMMAD IKHSAN HAIRULI","REYFAS RAMADHAN","EZA FEBRI AL FADZRI","HAFIDZ AL ROZI","ANDES AFENDRA","FEBRI GHALIH AL FAROBI","DANANG PRASDITYA SANTOSO","MUHAMMAD RAID MAHRUS","MUHAMMAD DIRGATAMA","CANZA RYANDA HUTASUHUT","FALIZH DAFFA QATRUNNADA","DAFFA AL MUSYARI","RAFI RAMADHAN","WAHYU REYDINATA","AKBAR PRAYOGA","VERY SYACH","MUHAMMAD AL FALAH"],
+
+  "Kamal": ["ADITYA PUTRA IBRAHIM","AIRLANGGA AZKA ABQORI","AQIELA MARSYAH","BRILLY HANDRIAN","DARREN ATHAYA","DZIKRI MUDHOFFAR","ELLENO QUTHBIE HERMAWAN","FADIL NURHALIM","GABRIEL AL FATIH","HADINATA SAPUTRA","MIKO VAJAR","MUHAMMAD ALMISKY PRATAMA","MUHAMMAD AQIL RIDHO","MUHAMMAD IZAM SAPUTRA","MUHAMMAD SYAKIR HUTABARAT","MUHAMMAD ZIYAD ZHAZHA","MUHAMMAD YASIR AL FAZAR JHIRA","RAFA"],
+
+  "Favian": ["ANGGA PRATAMA PUTRA","PRAWIRO PUJO TUNGGAL JATI","MUHAMMAD MARPIN","MARFEL SAPUTRA","MELDI NOVRIANSYAH","FAUZAN IBNI JABAR","MUHAMMAD FADHIL BUANA","QHEIZAN ALQIZA ARISDA","REZFY FAKHRYAZKA","MIKA RAHEL YUSUF","KI AGUS MUHAMMAD ABDULLAH SHIDDIQ AGTSALI","ARYA DIFA ALSYA","REYNALDI MALIK IBRAHIM ALFARIDZI","MUHAMMAD XAVI NF","MUHAMMAD FAISAL FIKRIANSYAH","HAFIDZ ALRIZKY","NAUFAL AKBAR ALKHATIRI","FARAZH SAYYID PUTRA KENEGA","SYAHRUL RAMADHAN","LUTHFAN ADZAKI","MUHAMMAD ABIL IRWANSYAH","ALIF SAMUDRA","FAHRIE OKTAVIRANO FITRIS"],
+
+  "Dimas": ["GHOZY FATURRAHMAN","MUHAMMAD THOORIQ","AHMAD RIYADI","ALIF MUHAMMAD YUSUF","BASRI AL HAZIQ ZULFAHMI","MUHAMMAD FAQIH HAFIDZALLAH","ABDULLAH MUKTI HAFIDZALLAH","DEDI SETIADI","FAKHRI AL MUZAKKI","ILHAM MUKMIN AL FARABI","MUHAMMAD ALLAM NUR HUSAIN","MUHAMMAD FIRAAS AL INSYIROH","NABIL NAJMI","SATRIO ABIMAYU","TEGAR HIDAYAT","WAFII FADHLURROHMAN","MUHAMMAD RIJALUL KAMIL","ALVIN HERFIANTINO","ZAHIR ZIBRAN","RADEN AZAA PANCA PUTRA"],
+
+  "Shafwan": ["AHMAD FARHAAN","ANUGRAH PRATAMA","CAHYIS ISZAM","DIKKI KURNIAWAN","FAHRY AKBAR RAMDHANI","HABIB RAMADHAN","IHZA TRINANDI","ILHAM","M.ARYA MAHDI WAFI EL-FAUZANI","MAHESA AULIA GIFFARI","MUHAMAD YUSUF ARROSIYD","MUHAMMAD RAYYAN HAFIZ","MUHAMMAD USAMAH","NAFIS","RAKA SEPTIAN","RENAL MARTIN","ROHADIN FIRDAUS AL QAUSAR","ROID AFDAL","ZULFAKIH HAERUNNASIHIN"],
+
+  "Fatimah": ["NILAM CAHYA","QELZA RAMADHANI ATH THAHIRAH","ASHIFA FITRI RAMADHONI","ADIBA AILA KHANZA","AISYAH NUR KHALIFAH","NYAYU MARLITSA ARDHANI","WILDA","WINDY WINDARI","ALFERA DESTIA","AISYAH NURUL AULIA","NESSYA RAMADHANY","AMIRAH BALQIS RAHADATUL A'ISYAH","EARLYTA ARSYFA SALSABILA","DAFIA NAFLA SYAKIRA","ANISYA SEPTIANI"],
+
+  "Evita": ["BILQIS NUR ANISAH","JESSICA PUTRY AYRA","GHENIS ANDIENTIAZ","DINA RUHAYAH","MALWA SHAGIRAH","PITRI RAMADANI","GRINNETA NALANI PUTRI","INAYAH NOURAH ANINDYA","SHELENA","FITRAH KIRANA"]
 };
 
-// simulated DB
-let absensiDB = [];
 let currentUser = null;
 
-// helper
-function escapeName(n){ return n.replace(/[^a-z0-9]/gi,'_'); }
-
-// UI init
-function fillUserDropdown(){
-  const sel = document.getElementById('userSelect');
-  if(!sel) return;
+// ======================= INIT UI =======================
+function init(){
+  const sel = document.getElementById("userSelect");
   sel.innerHTML = '<option value="">-- Pilih User --</option>';
-  users.forEach(u => { const o = document.createElement('option'); o.value = u.id; o.text = u.label; sel.appendChild(o); });
-}
+  users.forEach(u=>{
+    const o=document.createElement("option");
+    o.value=u.id; o.text=u.label;
+    sel.appendChild(o);
+  });
 
-function fillAdminNaqib(){
-  const adminSel = document.getElementById('adminNaqib');
-  if(!adminSel) return;
+  const adminSel = document.getElementById("adminNaqib");
   adminSel.innerHTML = '<option value="">Semua Naqib</option>';
-  Object.keys(dataSantri).forEach(k=>{ const o = document.createElement('option'); o.value = k; o.text = k; adminSel.appendChild(o); });
+  Object.keys(dataSantri).forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k; o.text=k;
+    adminSel.appendChild(o);
+  });
 }
+window.addEventListener("DOMContentLoaded", init);
 
-// LOGIN logic
-function handleLogin(){
-  const userSelect = document.getElementById('userSelect');
-  const kodeInput = document.getElementById('kode');
-  if(!userSelect || !kodeInput) return alert('Form login tidak tersedia.');
-  const userId = userSelect.value;
-  const kode = kodeInput.value.trim();
-  if(!userId) return alert('Pilih user.');
-  const user = users.find(u=>u.id === userId);
-  if(!user) return alert('User tidak ditemukan.');
-  if(kode !== user.code) return alert('Kode akses salah.');
-
+// ======================= LOGIN =======================
+function login(){
+  const userId = document.getElementById("userSelect").value;
+  const kode = document.getElementById("kode").value.trim();
+  if(!userId) return alert("Pilih user.");
+  const user = users.find(u=> u.id===userId);
+  if(!user) return alert("User tidak ditemukan");
+  if(kode !== user.code) return alert("Kode akses salah.");
+  
   currentUser = user;
-  if(user.role === 'admin'){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('absensiPage').style.display='none';
-    document.getElementById('adminPage').style.display='block';
+
+  if(user.role==="admin"){
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("adminPage").style.display="block";
     loadRekap();
-  } else if(user.role === 'naqib'){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('adminPage').style.display='none';
-    document.getElementById('absensiPage').style.display='block';
+  } else {
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("absensiPage").style.display="block";
     openNaqibPage(user);
   }
 }
 
+function logout(){
+  currentUser=null;
+  document.getElementById("loginPage").style.display="block";
+  document.getElementById("absensiPage").style.display="none";
+  document.getElementById("adminPage").style.display="none";
+}
+
+// Build table
 function openNaqibPage(user){
-  const lbl = document.getElementById('naqibLabel'); if(lbl) lbl.innerText = 'Naqib: ' + user.label;
+  document.getElementById("naqibLabel").innerText = "Naqib: " + user.label;
   const santri = dataSantri[user.naqibName] || [];
-  const body = document.getElementById('santriTable'); if(!body) return; body.innerHTML = '';
+  const body = document.getElementById("santriTable");
+  body.innerHTML="";
+
   santri.forEach(n=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `\n      <td>${n}</td>\n      <td><input type="radio" name="${escapeName(n)}" value="Hadir" checked></td>\n      <td><input type="radio" name="${escapeName(n)}" value="Izin"></td>\n      <td><input type="radio" name="${escapeName(n)}" value="Sakit"></td>\n      <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>\n    `;
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td>${n}</td>
+      <td><input type="radio" name="${escapeName(n)}" value="Hadir" checked></td>
+      <td><input type="radio" name="${escapeName(n)}" value="Izin"></td>
+      <td><input type="radio" name="${escapeName(n)}" value="Sakit"></td>
+      <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>
+    `;
     body.appendChild(tr);
   });
 }
 
-function checkAll(){ document.querySelectorAll('input[value="Hadir"]').forEach(r=>r.checked=true); }
+function escapeName(n){ return n.replace(/[^a-z0-9]/gi,"_"); }
 
+function checkAll(){
+  document.querySelectorAll('input[value="Hadir"]').forEach(r=> r.checked=true);
+}
+
+// ======================= FIREBASE ONLINE SAVE =======================
 function simpan(){
-  if(!currentUser || currentUser.role !== 'naqib') return alert('Hanya naqib yang dapat menyimpan absensi.');
-  const tanggal = document.getElementById('tanggal')?.value || new Date().toISOString().slice(0,10);
-  const program = document.getElementById('program')?.value || '';
+  const tanggal = document.getElementById("tanggal").value || new Date().toISOString().slice(0,10);
+  const program = document.getElementById("program").value;
   const naqib = currentUser.naqibName;
-  const rows = document.querySelectorAll('#santriTable tr');
+
+  const rows = document.querySelectorAll("#santriTable tr");
   rows.forEach(row=>{
     const nama = row.children[0].innerText;
     const st = document.querySelector(`input[name="${escapeName(nama)}"]:checked`);
-    const status = st ? st.value : 'Hadir';
-    absensiDB.push({ tanggal, program, naqib, nama, status });
+    const status = st ? st.value : "Hadir";
+
+    simpanOnline({tanggal, program, naqib, nama, status});
   });
-  alert('Absensi tersimpan. Total data: ' + absensiDB.length);
+
+  alert("Absensi tersimpan ke database online.");
 }
 
-function logout(){
-  currentUser = null;
-  const kode = document.getElementById('kode'); if(kode) kode.value = '';
-  const userSelect = document.getElementById('userSelect'); if(userSelect) userSelect.value = '';
-  document.getElementById('loginPage').style.display='block';
-  document.getElementById('absensiPage').style.display='none';
-  document.getElementById('adminPage').style.display='none';
-}
-
-function resetApp(){ absensiDB = []; logout(); alert('Reset selesai'); }
-
-async function loadRekap() {
-  const rekapDiv = document.getElementById("rekap");
-  rekapDiv.innerHTML = "Memuat data...";
-  try {
-    const res = await fetch(SHEET_URL);
-    const data = await res.json();
-    if (!data.length) {
-      rekapDiv.innerHTML = "<b>Belum ada data absensi.</b>";
-      return;
-    }
-    const filterNaqib = document.getElementById("adminNaqib").value;
-    const periode = document.getElementById("periode").value;
-    let filtered = data;
-    if (filterNaqib) filtered = data.filter(r => r.naqib === filterNaqib);
-    if (!filtered.length) {
-      rekapDiv.innerHTML = "<b>Tidak ada data untuk filter ini.</b>";
-      return;
-    }
-    const total = filtered.length;
-    const hadir = filtered.filter(r => r.status === "Hadir").length;
-    const izin = filtered.filter(r => r.status === "Izin").length;
-    const sakit = filtered.filter(r => r.status === "Sakit").length;
-    const alfa = filtered.filter(r => r.status === "Alfa").length;
-    const persen = ((hadir / total) * 100).toFixed(1);
-    let html = `
-      <p><b>Total Data:</b> ${total}</p>
-      <p><b>Hadir:</b> ${hadir} |
-         <b>Izin:</b> ${izin} |
-         <b>Sakit:</b> ${sakit} |
-         <b>Alfa:</b> ${alfa}</p>
-      <p><b>Persentase Kehadiran:</b> ${persen}%</p>
-      <hr>
-      <h4>Tabel Lengkap</h4>
-      <table>
-        <tr>
-          <th>Tanggal</th>
-          <th>Program</th>
-          <th>Naqib</th>
-          <th>Santri</th>
-          <th>Status</th>
-        </tr>`;
-    filtered.forEach(r => {
-      html += `
-        <tr>
-          <td>${r.tanggal}</td>
-          <td>${r.program}</td>
-          <td>${r.naqib}</td>
-          <td>${r.santri}</td>
-          <td>${r.status}</td>
-        </tr>`;
-    });
-    html += "</table>";
-    rekapDiv.innerHTML = html;
-  } catch (err) {
-    console.error(err);
-    rekapDiv.innerHTML = "<b>Error mengambil data. Pastikan Web App sudah Deploy.</b>";
-  }
-}
-
-
+// ======================= EXPORT CSV =======================
 function exportCSV(){
-  if(absensiDB.length===0) return alert('Tidak ada data');
-  const rows = [['tanggal','program','naqib','nama','status']];
-  absensiDB.forEach(r=> rows.push([r.tanggal,r.program,r.naqib,r.nama,r.status]));
-  const csv = rows.map(r => r.map(c=> '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'absensi.csv'; a.click(); URL.revokeObjectURL(url);
-}
+  loadAllAbsensi(data=>{
+    const rows = [["tanggal","program","naqib","nama","status"]];
+    data.forEach(r=> rows.push([r.tanggal,r.program,r.naqib,r.nama,r.status]));
 
-// safer exportPDF: handle popup blocked and fallback to blob URL
-function exportPDF(){
-  if(absensiDB.length===0) return alert('Tidak ada data');
-  const filterNaqib = document.getElementById('adminNaqib')?.value || '';
-  let filtered = absensiDB.slice();
-  if(filterNaqib) filtered = filtered.filter(r=> r.naqib === filterNaqib);
-
-  let html = `<!doctype html><html><head><meta charset="utf-8"><title>Rekap Absensi</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:6px;text-align:left}</style></head><body>`;
-  html += `<h2>Rekap Absensi ${filterNaqib || 'Semua Naqib'}</h2>`;
-  html += '<table><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr>';
-  filtered.forEach(r=>{ html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`; });
-  html += '</table></body></html>';
-
-  // Try to open new window first
-  let w = null;
-  try { w = window.open('', '_blank'); } catch(e){ w = null; }
-  if(w){
-    try{
-      w.document.open(); w.document.write(html); w.document.close();
-      // focus and print
-      w.focus();
-      setTimeout(()=>{ try{ w.print(); }catch(e){ alert('Gagal mencetak di jendela baru. Gunakan Export CSV atau izinkan pop-up.'); } }, 500);
-      return;
-    } catch(e){
-      // fallback to blob below
-      try{ w.close(); }catch(_){}
-    }
-  }
-
-  // Fallback: create blob URL and open it (works when direct window manipulation blocked)
-  try{
-    const blob = new Blob([html], {type:'text/html'});
+    const csv = rows.map(r=> r.join(",")).join("\n");
+    const blob = new Blob([csv], {type:"text/csv"});
     const url = URL.createObjectURL(blob);
-    const newTab = window.open(url, '_blank');
-    if(!newTab){
-      // Last-resort: offer CSV export or tell user to allow popups
-      URL.revokeObjectURL(url);
-      return alert('Pop-up diblokir. Izinkan pop-up atau gunakan Export CSV.');
+
+    const a=document.createElement("a");
+    a.href=url; a.download="absensi.csv"; a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+// ======================= REKAP ONLINE =======================
+function loadRekap(){
+  loadAllAbsensi(data=>{
+    if(data.length===0){
+      document.getElementById("rekap").innerHTML="<b>Belum ada data.</b>";
+      return;
     }
-    // Let user print from the opened tab
-    setTimeout(()=>{ try{ newTab.focus(); }catch(_){ } }, 300);
-  } catch(e){
-    alert('Gagal membuat file untuk dicetak. Gunakan fitur Export CSV.');
-  }
-}
 
-// Attach handlers after DOM is ready
-window.addEventListener('DOMContentLoaded', ()=>{
-  fillUserDropdown();
-  fillAdminNaqib();
+    const filterNaqib = document.getElementById("adminNaqib").value;
+    let filtered = data;
+    if(filterNaqib) filtered = data.filter(r=> r.naqib === filterNaqib);
 
-  document.getElementById('btnLogin')?.addEventListener('click', handleLogin);
-  document.getElementById('btnReset')?.addEventListener('click', resetApp);
-  document.getElementById('btnCheckAll')?.addEventListener('click', checkAll);
-  document.getElementById('btnSimpan')?.addEventListener('click', simpan);
-  document.getElementById('btnLogout1')?.addEventListener('click', logout);
-  document.getElementById('btnLogout2')?.addEventListener('click', logout);
-  document.getElementById('btnRekap')?.addEventListener('click', loadRekap);
-  document.getElementById('btnExportCSV')?.addEventListener('click', exportCSV);
-  document.getElementById('btnExportPDF')?.addEventListener('click', exportPDF);
-});
+    const total = filtered.length;
+    const hadir = filtered.filter(r=> r.status=="Hadir").length;
+    const izin = filtered.filter(r=> r.status=="Izin").length;
+    const sakit = filtered.filter(r=> r.status=="Sakit").length;
+    const alfa = filtered.filter(r=> r.status=="Alfa").length;
+    const persen = total? ((hadir/total)*100).toFixed(1):0;
 
-// === Google Sheets Integration Added ===
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwlmmqeZ5GaoIWkmndAUBBhEAHMIDThgwW5eN_G2UZX5hvOglTGjlNRia3HzyQtsiHe/exec";
+    let html = `
+      <p>
+      <b>Total Data:</b> ${total}<br>
+      <b>Total Hadir:</b> ${hadir}<br>
+      <b>Persentase Kehadiran:</b> ${persen}%
+      </p>
+    `;
 
-async function sendToSheet(payload) {
-  try {
-    await fetch(SHEET_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+    html += "<hr><h4>Per Naqib</h4>";
+    Object.keys(dataSantri).forEach(nq=>{
+      const d = data.filter(r=> r.naqib===nq);
+      if(d.length===0){
+        html+=`<p><b>${nq}</b>: Tidak ada data.</p>`;
+      } else {
+        const H = d.filter(x=>x.status=="Hadir").length;
+        const I = d.filter(x=>x.status=="Izin").length;
+        const S = d.filter(x=>x.status=="Sakit").length;
+        const A = d.filter(x=>x.status=="Alfa").length;
+        const P = ((H/d.length)*100).toFixed(1);
+        html+=`<p><b>${nq}</b> — H:${H} | I:${I} | S:${S} | A:${A} | <b>${P}% hadir</b></p>`;
+      }
     });
-    console.log("Berhasil terkirim:", payload);
-    return true;
-  } catch (err) {
-    console.error("Gagal kirim:", err);
-    alert("Gagal mengirim ke Google Sheets!");
-    return false;
-  }
+
+    html += "<hr><h4>Tabel Lengkap</h4>";
+    html += "<table><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr>";
+
+    filtered.forEach(r=>{
+      html += `<tr>
+        <td>${r.tanggal}</td>
+        <td>${r.program}</td>
+        <td>${r.naqib}</td>
+        <td>${r.nama}</td>
+        <td>${r.status}</td>
+      </tr>`;
+    });
+
+    html+="</table>";
+    document.getElementById("rekap").innerHTML = html;
+  });
 }
-
-async function simpan() {
-  if (!currentUser || currentUser.role !== "naqib") {
-    alert("Hanya naqib yang dapat menyimpan absensi.");
-    return;
-  }
-
-  const tanggal = document.getElementById("tanggal").value || new Date().toISOString().slice(0, 10);
-  const program = document.getElementById("program").value;
-  const naqib = currentUser.naqibName;
-  const rows = document.querySelectorAll("#santriTable tr");
-
-  let count = 0;
-
-  for (let row of rows) {
-    const nama = row.children[0].innerText;
-    const statusInput = document.querySelector(`input[name="${escapeName(nama)}"]:checked`);
-    const status = statusInput ? statusInput.value : "Hadir";
-
-    const payload = { tanggal, program, naqib, nama, status };
-    await sendToSheet(payload);
-    count++;
-  }
-
-  alert(`Absensi berhasil dikirim: ${count} data.`);
-}
-
 </script>
+
+<!-- ======================= FIREBASE MODULE ======================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0Ez2a85ZwQLR28U-yHpVmM3o8NMxZoLI",
+  authDomain: "absensi-santri-fajrul-islam.firebaseapp.com",
+  databaseURL: "https://absensi-santri-fajrul-islam-default-rtdb.firebaseio.com",
+  projectId: "absensi-santri-fajrul-islam",
+  storageBucket: "absensi-santri-fajrul-islam.appspot.com",
+  messagingSenderId: "739928369926",
+  appId: "1:739928369926:web:7e95375c3ddba0f584cdd07"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// SIMPAN ONLINE
+window.simpanOnline = function(entry){
+  push(ref(db,"absensi"), entry);
+};
+
+// LOAD ONLINE
+window.loadAllAbsensi = function(callback){
+  onValue(ref(db,"absensi"), snapshot=>{
+    const d = snapshot.val() || {};
+    callback(Object.values(d));
+  });
+};
+</script>
+
 </body>
 </html>
