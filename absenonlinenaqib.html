@@ -276,40 +276,7 @@ async function loadRekap() {
     rekapDiv.innerHTML = "<b>Error mengambil data. Pastikan Web App sudah Deploy.</b>";
   }
 }
-// filter by naqib
-  let filtered = absensiDB.slice();
-  if(filterNaqib) filtered = filtered.filter(r=> r.naqib === filterNaqib);
 
-  // total counts
-  const total = filtered.length;
-  const hadir = filtered.filter(r=> r.status==='Hadir').length;
-  const izin = filtered.filter(r=> r.status==='Izin').length;
-  const sakit = filtered.filter(r=> r.status==='Sakit').length;
-  const alfa = filtered.filter(r=> r.status==='Alfa').length;
-  const persen = total ? ((hadir/total)*100).toFixed(1) : 0;
-
-  let html = `<p><b>Total Data:</b> ${total}<br><b>Total Hadir:</b> ${hadir}<br><b>Persentase Kehadiran:</b> <b>${persen}%</b></p>`;
-
-  // per naqib summary
-  html += '<hr><h4>Per Naqib</h4>';
-  Object.keys(dataSantri).forEach(nq=>{
-    const d = absensiDB.filter(r=> r.naqib === nq);
-    if(d.length===0){ html += `<p><b>${nq}</b>: Tidak ada data.</p>`; return; }
-    const H = d.filter(x=> x.status==='Hadir').length;
-    const I = d.filter(x=> x.status==='Izin').length;
-    const S = d.filter(x=> x.status==='Sakit').length;
-    const A = d.filter(x=> x.status==='Alfa').length;
-    const P = d.length ? ((H/d.length)*100).toFixed(1) : 0;
-    html += `<p><b>${nq}</b> — H:${H} | I:${I} | S:${S} | A:${A} | <b>${P}% hadir</b></p>`;
-  });
-
-  // tabel lengkap (filtered)
-  html += '<hr><h4>Tabel Lengkap</h4><table><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr>';
-  filtered.forEach(r=>{ html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`; });
-  html += '</table>';
-
-  document.getElementById('rekap').innerHTML = html;
-}
 
 function exportCSV(){
   if(absensiDB.length===0) return alert('Tidak ada data');
