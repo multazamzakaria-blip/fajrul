@@ -218,13 +218,65 @@ function logout(){
 
 function resetApp(){ absensiDB = []; logout(); alert('Reset selesai'); }
 
-function loadRekap(){
-  const filterNaqib = document.getElementById('adminNaqib')?.value || '';
-  const periode = document.getElementById('periode')?.value || 'harian'; // not used heavily yet
-
-  if(absensiDB.length === 0){ document.getElementById('rekap').innerHTML = '<b>Belum ada data absensi.</b>'; return; }
-
-  // filter by naqib
+async function loadRekap() {
+  const rekapDiv = document.getElementById("rekap");
+  rekapDiv.innerHTML = "Memuat data...";
+  try {
+    const res = await fetch(SHEET_URL);
+    const data = await res.json();
+    if (!data.length) {
+      rekapDiv.innerHTML = "<b>Belum ada data absensi.</b>";
+      return;
+    }
+    const filterNaqib = document.getElementById("adminNaqib").value;
+    const periode = document.getElementById("periode").value;
+    let filtered = data;
+    if (filterNaqib) filtered = data.filter(r => r.naqib === filterNaqib);
+    if (!filtered.length) {
+      rekapDiv.innerHTML = "<b>Tidak ada data untuk filter ini.</b>";
+      return;
+    }
+    const total = filtered.length;
+    const hadir = filtered.filter(r => r.status === "Hadir").length;
+    const izin = filtered.filter(r => r.status === "Izin").length;
+    const sakit = filtered.filter(r => r.status === "Sakit").length;
+    const alfa = filtered.filter(r => r.status === "Alfa").length;
+    const persen = ((hadir / total) * 100).toFixed(1);
+    let html = `
+      <p><b>Total Data:</b> ${total}</p>
+      <p><b>Hadir:</b> ${hadir} |
+         <b>Izin:</b> ${izin} |
+         <b>Sakit:</b> ${sakit} |
+         <b>Alfa:</b> ${alfa}</p>
+      <p><b>Persentase Kehadiran:</b> ${persen}%</p>
+      <hr>
+      <h4>Tabel Lengkap</h4>
+      <table>
+        <tr>
+          <th>Tanggal</th>
+          <th>Program</th>
+          <th>Naqib</th>
+          <th>Santri</th>
+          <th>Status</th>
+        </tr>`;
+    filtered.forEach(r => {
+      html += `
+        <tr>
+          <td>${r.tanggal}</td>
+          <td>${r.program}</td>
+          <td>${r.naqib}</td>
+          <td>${r.santri}</td>
+          <td>${r.status}</td>
+        </tr>`;
+    });
+    html += "</table>";
+    rekapDiv.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+    rekapDiv.innerHTML = "<b>Error mengambil data. Pastikan Web App sudah Deploy.</b>";
+  }
+}
+// filter by naqib
   let filtered = absensiDB.slice();
   if(filterNaqib) filtered = filtered.filter(r=> r.naqib === filterNaqib);
 
