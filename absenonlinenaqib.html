@@ -3,119 +3,218 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Absensi Program Harian Santri Fajrul Islam - Naqib</title>
+<title>Kedisiplinan Santri — Absensi & Rekap Pelanggaran</title>
 <style>
   body{font-family:Arial, sans-serif;padding:18px;background:#f7f7f7}
-  .card{background:#fff;border:1px solid #e6e6e6;padding:18px;border-radius:10px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,0.03)}
-  h2{margin-top:0}
-  label{display:inline-block;margin:6px 0}
-  input,select{padding:8px;border:1px solid #ddd;border-radius:6px}
-  .btn{padding:9px 14px;background:#1e88e5;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-right:8px}
+  h1,h2{margin-top:0}
+  .card{background:#fff;border:1px solid #e6e6e6;padding:18px;border-radius:10px;
+        margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+  .hidden{display:none}
+  label{display:inline-block;margin:6px 0;font-weight:bold}
+  input,select,textarea{padding:8px;border:1px solid #ddd;border-radius:6px;width:100%}
+  .btn{padding:10px 16px;background:#1e88e5;color:#fff;border:none;border-radius:6px;
+       cursor:pointer;margin-right:8px;font-size:1rem}
   .btn.alt{background:#43a047}
+  .btn.warn{background:#f57c00}
   table{width:100%;border-collapse:collapse;margin-top:12px}
-  th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:0.95rem}
-  .small{color:#666;font-size:0.9rem}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .col{flex:1;min-width:150px}
-  .muted{color:#777;font-size:0.9rem}
-  .sectionTitle{font-weight:bold;margin-bottom:6px}
-  @media(max-width:600px){ .row{flex-direction:column;align-items:stretch} }
+  th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:0.95rem;background:#fff}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .col{flex:1;min-width:180px}
+  .note{background:#fffbe6;border:1px solid #ffe58f;padding:10px;border-radius:6px;margin-top:12px}
+  hr.sep{border:none;border-top:1px solid #eee;margin:12px 0}
+  @media(max-width:900px){ .row{flex-direction:column} }
 </style>
 </head>
 <body>
-  <h2>Absensi Program Harian Santri Fajrul Islam - Naqib</h2>
+<h1>Kedisiplinan Santri</h1>
+<p>Absensi Online dan Rekap Pelanggaran</p>
 
-  <!-- LOGIN -->
-  <div class="card" id="loginPage">
-    <h3>Login Naqib / Admin</h3>
-    <label>Pilih User:</label>
-    <select id="userSelect"><option value="">-- Pilih User --</option></select><br>
-    <label>Kode Akses:</label>
-    <input type="password" id="kode" /><br><br>
-    <button class="btn" onclick="login()">Masuk</button>
-    <p class="small">Isi dengan tiliti dan jujur!</p>
-  </div>
+<!-- LOGIN -->
+<div class="card" id="loginPage">
+  <h3>Login Naqib / Admin</h3>
+  <label>Pilih User:</label>
+  <select id="userSelect"><option value="">-- Pilih User --</option></select>
+  <label>Kode Akses:</label>
+  <input type="password" id="kode">
+  <br><br>
+  <button class="btn" onclick="login()">Masuk</button>
+  <p style="color:#666;margin-top:10px">Isi dengan teliti dan jujur!</p>
+</div>
 
-  <!-- ABSENSI NAQIB -->
-  <div class="card" id="absensiPage" style="display:none;">
-    <h3 id="naqibLabel">Form Absensi</h3>
-    <label>Tanggal: <input type="date" id="tanggal"></label><br><br>
-    <label>Program:</label>
-    <select id="program">
-      <option>TAHAJJUD</option><option>SHALAT SUBUH</option><option>JOGING PAGI</option>
-      <option>SHALAT ZUHUR</option><option>TIDUR SIANG</option><option>SHALAT ASHAR</option>
-      <option>SHALAT MAGHRIB</option><option>SHALAT ISYA</option><option>TIDUR MALAM</option>
-      <option>PIKET KEBERSIHAN</option>
-    </select>
-    <h4>Daftar Santri</h4>
-    <button class="btn" onclick="checkAll()">Hadir Semua</button>
-    <table><thead><tr><th>Nama</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr></thead><tbody id="santriTable"></tbody></table>
-    <br>
-    <button class="btn" onclick="simpan()">Simpan</button>
-    <button class="btn alt" onclick="logout()">Logout</button>
-  </div>
-
-  <!-- ADMIN -->
-  <div class="card" id="adminPage" style="display:none;">
-    <h3>Halaman Admin — Rekap Rentang Tanggal</h3>
-
-    <div class="row">
-      <div class="col">
-        <label>Dari tanggal:</label><br>
-        <input type="date" id="fromDate">
-      </div>
-      <div class="col">
-        <label>Sampai tanggal:</label><br>
-        <input type="date" id="toDate">
-      </div>
-
-      <div class="col">
-        <label>Pilih Naqib (opsional):</label><br>
-        <select id="adminNaqib"><option value="">Semua Naqib</option></select>
-      </div>
-
-      <div class="col">
-        <label>Program:</label><br>
-        <select id="filterProgram">
-          <option value="">Semua Program</option>
-          <option value="TAHAJJUD">TAHAJJUD</option>
-          <option value="SHALAT SUBUH">SHALAT SUBUH</option>
-          <option value="JOGING PAGI">JOGING PAGI</option>
-          <option value="SHALAT ZUHUR">SHALAT ZUHUR</option>
-          <option value="TIDUR SIANG">TIDUR SIANG</option>
-          <option value="SHALAT ASHAR">SHALAT ASHAR</option>
-          <option value="SHALAT MAGHRIB">SHALAT MAGHRIB</option>
-          <option value="SHALAT ISYA">SHALAT ISYA</option>
-          <option value="TIDUR MALAM">TIDUR MALAM</option>
-          <option value="PIKET KEBERSIHAN">PIKET KEBERSIHAN</option>
-        </select>
-      </div>
+<!-- NAQIB DASHBOARD -->
+<div class="card hidden" id="naqibDashboard">
+  <h3 id="naqibLabel">Naqib</h3>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div>
+      <button class="btn" onclick="showSection('absensiPage')">Absensi Program Harian</button>
+      <button class="btn alt" onclick="showSection('pelanggaranPage')">Form Pelanggaran Santri</button>
     </div>
+    <div style="margin-left:auto">
+      <button class="btn warn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
 
-    <div style="margin-top:10px;">
+<!-- ABSENSI -->
+<div class="card hidden" id="absensiPage">
+  <h3>Form Absensi — <span id="naqibLabel2"></span></h3>
+  <div class="row">
+    <div class="col">
+      <label>Tanggal:</label>
+      <input type="date" id="tanggal">
+    </div>
+    <div class="col">
+      <label>Program:</label>
+      <select id="program">
+        <option>TAHAJJUD</option><option>SHALAT SUBUH</option><option>JOGING PAGI</option>
+        <option>SHALAT ZUHUR</option><option>TIDUR SIANG</option><option>SHALAT ASHAR</option>
+        <option>SHALAT MAGHRIB</option><option>SHALAT ISYA</option><option>TIDUR MALAM</option>
+        <option>PIKET KEBERSIHAN</option>
+      </select>
+    </div>
+  </div>
+  <h4>Daftar Santri</h4>
+  <button class="btn" onclick="checkAll()">Hadir Semua</button>
+  <table>
+    <thead><tr><th>Nama</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr></thead>
+    <tbody id="santriTable"></tbody>
+  </table>
+  <br>
+  <button class="btn alt" onclick="simpan()">Simpan Absensi</button>
+  <button class="btn" style="background:#999" onclick="showSection('naqibDashboard')">Kembali</button>
+</div>
+
+<!-- PELANGGARAN -->
+<div class="card hidden" id="pelanggaranPage">
+  <h3>Form Pelanggaran Santri</h3>
+  <div class="row">
+    <div class="col">
+      <label>Naqib:</label>
+      <input type="text" id="pelNaqib" readonly style="background:#eee">
+    </div>
+    <div class="col">
+      <label>Nama Santri:</label>
+      <select id="pelSantri"><option value="">-- Pilih Santri --</option></select>
+    </div>
+    <div class="col">
+      <label>Tanggal:</label>
+      <input type="date" id="pelTanggal">
+    </div>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <div class="col">
+      <label>Kategori:</label>
+      <select id="pelKategori"><option value="Baru">Baru</option><option value="Berulang">Berulang</option></select>
+    </div>
+    <div class="col">
+      <label>Jenis Pelanggaran:</label>
+      <input type="text" id="pelJenis" placeholder="Contoh: Tidak Shalat, Ribut, dll">
+    </div>
+    <div class="col">
+      <label>Level:</label>
+      <select id="pelLevel"><option>Ringan</option><option>Sedang</option><option>Berat</option></select>
+    </div>
+  </div>
+  <label style="margin-top:10px">Catatan:</label>
+  <textarea id="pelCatatan" rows="3"></textarea>
+  <br>
+  <button class="btn alt" onclick="simpanPelanggaran()">Simpan Pelanggaran</button>
+  <button class="btn" style="background:#999" onclick="showSection('naqibDashboard')">Kembali</button>
+  <p class="note">Anti-duplikasi: Pelanggaran <b>Nama + Jenis + Tanggal</b> tidak boleh tercatat dua kali.</p>
+</div>
+
+<!-- ADMIN -->
+<div class="card hidden" id="adminPage">
+  <h3>Rekap Kedisiplinan Santri (Admin)</h3>
+
+  <!-- Tombol baru paling atas: Laporan Bulanan Per Santri -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+    <div>
+      <button class="btn" style="background:#00897b" onclick="showSection('lapBulananPage')">Laporan Bulanan Per Santri</button>
+    </div>
+    <div style="margin-left:auto">
       <button class="btn" onclick="rekapHarian()">Rekap Harian</button>
-      <button class="btn" onclick="rekapPekanan()">Rekap Per Pekan</button>
-      <button class="btn" onclick="rekapBulanan()">Rekap Per Bulan</button>
-      <button class="btn alt" onclick="tampilkanRekap()">Tampilkan Semua (rentang)</button>
-      <button class="btn alt" onclick="exportPDF()">Export PDF</button>
-      <button style="background:#999;color:#fff;border:none;padding:9px 12px;border-radius:6px;margin-left:8px" onclick="logout()">Logout</button>
+      <button class="btn" onclick="rekapPekanan()">Rekap Pekanan</button>
+      <button class="btn" onclick="rekapBulanan()">Rekap Bulanan</button>
+      <button class="btn alt" onclick="tampilkanRekap()">Tampilkan Semua</button>
     </div>
-
-    <h4 style="margin-top:12px">Hasil Rekap</h4>
-    <div id="rekapArea">Pilih rentang tanggal lalu klik Rekap.</div>
   </div>
+
+  <div class="row">
+    <div class="col">
+      <label>Dari:</label><input type="date" id="fromDate">
+    </div>
+    <div class="col">
+      <label>Sampai:</label><input type="date" id="toDate">
+    </div>
+    <div class="col">
+      <label>Pilih Naqib:</label>
+      <select id="adminNaqib"><option value="">Semua</option></select>
+    </div>
+    <div class="col">
+      <label>Program:</label>
+      <select id="filterProgram"><option value="">Semua</option><option>TAHAJJUD</option><option>SHALAT SUBUH</option><option>JOGING PAGI</option><option>SHALAT ZUHUR</option><option>TIDUR SIANG</option><option>SHALAT ASHAR</option><option>SHALAT MAGHRIB</option><option>SHALAT ISYA</option><option>TIDUR MALAM</option><option>PIKET KEBERSIHAN</option></select>
+    </div>
+  </div>
+
+  <br>
+  <button class="btn" style="background:#6a1b9a" onclick="rekapPelanggaranAll()">Rekap Pelanggaran</button>
+  <button class="btn" style="background:#c2185b" onclick="rekapPelanggaranBaru()">Pelanggaran Baru</button>
+  <button class="btn" style="background:#d81b60" onclick="rekapPelanggaranBerulang()">Pelanggaran Berulang</button>
+  <button class="btn" style="background:#d32f2f;color:white" onclick="hapusSemuaPelanggaran()">Hapus Semua Pelanggaran</button>
+  <button class="btn" style="background:#999" onclick="logout()">Logout</button>
+
+  <hr class="sep">
+  <h4 style="margin-top:12px">Hasil Rekap:</h4>
+  <div id="rekapArea" style="min-height:200px">Silakan pilih rentang tanggal.</div>
+</div>
+
+<!-- LAPORAN BULANAN PER SANTRI -->
+<div class="card hidden" id="lapBulananPage">
+  <h3>Laporan Bulanan Per Santri</h3>
+  <div class="row">
+    <div class="col">
+      <label>Pilih Naqib:</label>
+      <select id="bulananNaqib"><option value="">-- Pilih Naqib --</option></select>
+    </div>
+    <div class="col">
+      <label>Pilih Santri:</label>
+      <select id="bulananSantri"><option value="">-- Pilih Santri --</option></select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label>Bulan:</label>
+      <select id="bulananBulan">
+        <option value="">-- Pilih Bulan --</option>
+        <option value="0">Januari</option><option value="1">Februari</option><option value="2">Maret</option><option value="3">April</option><option value="4">Mei</option><option value="5">Juni</option><option value="6">Juli</option><option value="7">Agustus</option><option value="8">September</option><option value="9">Oktober</option><option value="10">November</option><option value="11">Desember</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Tahun:</label>
+      <input type="number" id="bulananTahun" min="2020" max="2099" value="2025">
+    </div>
+  </div>
+  <br>
+  <button class="btn alt" onclick="generateLaporanBulanan()">Tampilkan</button>
+  <button class="btn" style="background:#795548" onclick="exportLaporanBulananPDF()">Export PDF</button>
+  <button class="btn" style="background:#999" onclick="showSection('adminPage')">Kembali</button>
+
+  <h3 style="margin-top:20px">Hasil Laporan:</h3>
+  <div id="lapBulananHasil"></div>
+</div>
 
 <script>
-// -------------------- DATA & SANTRI --------------------
+// -------------------- DATA USERS & SANTRI --------------------
 const users = [
   { id: 'Admin', label: 'Admin', role: 'admin', code: 'ADMIN123' },
-  { id: 'Regen', label: 'Naqib Regen', role: 'naqib', code: 'REGEN111', naqibName: 'Regen' },
-  { id: 'Kamal', label: 'Naqib Kamal', role: 'naqib', code: 'KAMAL111', naqibName: 'Kamal' },
-  { id: 'Favian', label: 'Naqib Favian', role: 'naqib', code: 'FAVIAN111', naqibName: 'Favian' },
-  { id: 'Dimas', label: 'Naqib Dimas', role: 'naqib', code: 'DIMAS111', naqibName: 'Dimas' },
-  { id: 'Shafwan', label: 'Naqib Shafwan', role: 'naqib', code: 'SHAFWAN111', naqibName: 'Shafwan' },
-  { id: 'Fatimah', label: 'Naqibah Fatimah', role: 'naqib', code: 'FATIMAH111', naqibName: 'Fatimah' },
-  { id: 'Evita', label: 'Naqibah Evita', role: 'naqib', code: 'EVITA111', naqibName: 'Evita' }
+  { id: 'Regen', label: 'Naqib Regen', role: 'naqib', code: 'REGEN111', naqibName:'Regen' },
+  { id: 'Kamal', label: 'Naqib Kamal', role: 'naqib', code: 'KAMAL111', naqibName:'Kamal' },
+  { id: 'Favian', label: 'Naqib Favian', role: 'naqib', code: 'FAVIAN111', naqibName:'Favian' },
+  { id: 'Dimas', label: 'Naqib Dimas', role: 'naqib', code: 'DIMAS111', naqibName:'Dimas' },
+  { id: 'Shafwan', label: 'Naqib Shafwan', role: 'naqib', code: 'SHAFWAN111', naqibName:'Shafwan' },
+  { id: 'Fatimah', label: 'Naqibah Fatimah', role: 'naqib', code: 'FATIMAH111', naqibName:'Fatimah' },
+  { id: 'Evita', label: 'Naqibah Evita', role: 'naqib', code: 'EVITA111', naqibName:'Evita' }
 ];
 
 const dataSantri = {
@@ -128,27 +227,33 @@ const dataSantri = {
   "Evita":[ "BILQIS NUR ANISAH","JESSICA PUTRY AYRA","GHENIS ANDIENTIAZ","DINA RUHAYAH","MALWA SHAGIRAH","PITRI RAMADANI","GRINNETA NALANI PUTRI","INAYAH NOURAH ANINDYA","SHELENA","FITRAH KIRANA"]
 };
 
-let currentUser = null; // state
+let currentUser = null;
 
-// ---------------------- INIT UI ----------------------
+// INIT
 function init(){
-  const sel = document.getElementById('userSelect');
-  sel.innerHTML = '<option value="">-- Pilih User --</option>';
-  users.forEach(u=>{ const o=document.createElement('option'); o.value=u.id; o.text=u.label; sel.appendChild(o); });
+  const sel = document.getElementById('userSelect'); sel.innerHTML = '<option value="">-- Pilih User --</option>';
+  users.forEach(u=>{ const o=document.createElement('option'); o.value=u.id; o.textContent=u.label; sel.appendChild(o); });
 
   const adminSel = document.getElementById('adminNaqib');
-  adminSel.innerHTML = '<option value="">Semua Naqib</option>';
-  Object.keys(dataSantri).forEach(k=>{ const o=document.createElement('option'); o.value=k; o.text=k; adminSel.appendChild(o); });
+  if(adminSel){ adminSel.innerHTML = '<option value="">Semua</option>'; Object.keys(dataSantri).forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=k; adminSel.appendChild(o); }); }
 
-  // default dates: minggu lalu sampai hari ini
-  const today = new Date();
-  const first = new Date(today);
-  first.setDate(today.getDate() - 7);
-  document.getElementById('fromDate').value = toISODate(first);
-  document.getElementById('toDate').value = toISODate(today);
+  // populate bulananNaqib & bulananSantri
+  const bn = document.getElementById('bulananNaqib'); bn.innerHTML='<option value="">-- Pilih Naqib --</option>';
+  Object.keys(dataSantri).forEach(k=>{ const o=document.createElement('option'); o.value=o.textContent=k; bn.appendChild(o); });
+
+  const today = new Date(); const ymd = toISODate(today); const from = new Date(); from.setDate(today.getDate()-7);
+  if(document.getElementById('tanggal')) document.getElementById('tanggal').value = ymd;
+  if(document.getElementById('pelTanggal')) document.getElementById('pelTanggal').value = ymd;
+  if(document.getElementById('fromDate')) document.getElementById('fromDate').value = toISODate(from);
+  if(document.getElementById('toDate')) document.getElementById('toDate').value = ymd;
+  if(document.getElementById('bulananTahun')) document.getElementById('bulananTahun').value = today.getFullYear();
 }
 window.addEventListener('DOMContentLoaded', init);
 
+// NAV
+function showSection(id){ const list=['loginPage','naqibDashboard','absensiPage','pelanggaranPage','adminPage','lapBulananPage']; list.forEach(sec=>{ const el=document.getElementById(sec); if(!el) return; if(sec===id) el.classList.remove('hidden'); else el.classList.add('hidden'); }); }
+
+// LOGIN
 function login(){
   const userId = document.getElementById('userSelect').value;
   const kode = document.getElementById('kode').value.trim();
@@ -156,385 +261,243 @@ function login(){
   const user = users.find(u=>u.id===userId);
   if(!user) return alert('User tidak ditemukan.');
   if(kode !== user.code) return alert('Kode akses salah.');
-
   currentUser = user;
-  if(user.role === 'admin'){
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('absensiPage').style.display='none';
-    document.getElementById('adminPage').style.display='block';
-    document.getElementById('rekapArea').innerHTML = 'Pilih rentang tanggal lalu klik Rekap.';
-  } else {
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('adminPage').style.display='none';
-    document.getElementById('absensiPage').style.display='block';
+  document.getElementById('kode').value = '';
+  document.getElementById('loginPage').classList.add('hidden');
+  if(user.role === 'admin'){ showSection('adminPage'); }
+  else {
+    document.getElementById('naqibLabel').textContent = user.label;
+    document.getElementById('naqibLabel2').textContent = user.label;
+    populateSantriSelect(user.naqibName);
     openNaqibPage(user);
+    showSection('absensiPage');
   }
 }
 
-function logout(){
-  currentUser = null;
-  document.getElementById('kode').value='';
-  document.getElementById('userSelect').value='';
-  document.getElementById('loginPage').style.display='block';
-  document.getElementById('absensiPage').style.display='none';
-  document.getElementById('adminPage').style.display='none';
-}
+// LOGOUT
+function logout(){ currentUser=null; document.getElementById('userSelect').value=''; document.getElementById('kode').value=''; document.getElementById('rekapArea').innerHTML='Silakan pilih rentang tanggal.'; showSection('loginPage'); }
 
+// ABSENSI
 function openNaqibPage(user){
-  document.getElementById('naqibLabel').innerText = 'Naqib: ' + user.label;
-  const santri = dataSantri[user.naqibName] || [];
+  const list = dataSantri[user.naqibName] || [];
   const body = document.getElementById('santriTable'); body.innerHTML = '';
-  santri.forEach(n=>{
+  list.forEach(n=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${n}</td>
+    tr.innerHTML = `<td style="text-align:left">${n}</td>
       <td><input type="radio" name="${escapeName(n)}" value="Hadir" checked></td>
       <td><input type="radio" name="${escapeName(n)}" value="Izin"></td>
       <td><input type="radio" name="${escapeName(n)}" value="Sakit"></td>
-      <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>
-    `;
+      <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>`;
     body.appendChild(tr);
   });
 }
 function escapeName(n){ return n.replace(/[^a-z0-9]/gi,'_'); }
 function checkAll(){ document.querySelectorAll('input[value="Hadir"]').forEach(r=>r.checked=true); }
 
-// ---------------------- FIREBASE (module below) ----------------------
-// simpan() akan memanggil simpanOnline() yang didefinisikan di module Firebase
 function simpan(){
-  if(!currentUser || currentUser.role !== 'naqib') return alert('Hanya naqib yang dapat menyimpan absensi.');
-  const tanggal = document.getElementById('tanggal').value || new Date().toISOString().slice(0,10);
+  if(!currentUser || currentUser.role !== 'naqib') return alert('Hanya naqib dapat mengisi absensi.');
+  const tanggal = document.getElementById('tanggal').value;
   const program = document.getElementById('program').value;
   const naqib = currentUser.naqibName;
   const rows = document.querySelectorAll('#santriTable tr');
   rows.forEach(row=>{
     const nama = row.children[0].innerText;
-    const st = document.querySelector(`input[name="${escapeName(nama)}"]:checked`);
-    const status = st ? st.value : 'Hadir';
-    // simpan ke firebase
-    simpanOnline({ tanggal, program, naqib, nama, status });
+    const status = document.querySelector(`input[name="${escapeName(nama)}"]:checked`).value;
+    if(typeof simpanOnline === 'function'){
+      simpanOnline({ tanggal, program, naqib, nama, status });
+    }
   });
-  alert('Absensi tersimpan ke database online.');
+  alert('Absensi tersimpan.');
 }
 
-// ---------------------- HELPERS (date & grouping) ----------------------
-function toISODate(d){
-  const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
+// PELANGGARAN
+function populateSantriSelect(naqib){
+  const el = document.getElementById('pelSantri'); el.innerHTML = '<option value="">-- Pilih Santri --</option>';
+  (dataSantri[naqib] || []).forEach(s=>{ const o=document.createElement('option'); o.textContent=s; o.value=s; el.appendChild(o); });
 }
-function parseISO(dstr){ // expect YYYY-MM-DD
-  const parts = dstr.split('-').map(x=>parseInt(x,10));
-  return new Date(parts[0], parts[1]-1, parts[2]);
-}
-
-// get Monday date for given date
-function weekStart(date){
-  const d = new Date(date);
-  const day = d.getDay(); // 0 sunday .. 6 saturday
-  const diff = (day === 0) ? -6 : (1 - day); // move to Monday
-  d.setDate(d.getDate() + diff);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-function weekEndFromStart(ws){
-  const e = new Date(ws); e.setDate(e.getDate() + 6); return e;
-}
-
-// ---------------------- FILTER & LOAD HELP ----------------------
-function getRangeFilter(){
-  const from = document.getElementById('fromDate').value;
-  const to = document.getElementById('toDate').value;
-  if(!from || !to) { alert('Pilih dari dan sampai tanggal.'); return null; }
-  const d1 = parseISO(from);
-  const d2 = parseISO(to);
-  if(d2 < d1) { alert('Tanggal sampai harus >= tanggal dari'); return null; }
-  return { from: d1, to: d2 };
-}
-
-// loadAllAbsensi(callback) disediakan oleh firebase module; callback menerima array data
-// kita akan mem-filter oleh rentang tanggal + naqib (opsional) + program (opsional)
-function loadFilteredRange(callback){
-  const rf = getRangeFilter(); 
-  if(!rf) return;
-  const filterNaqib = document.getElementById('adminNaqib').value;
-  const filterProgram = document.getElementById('filterProgram').value;
-
-  loadAllAbsensi(data=>{
-    const filtered = data.filter(it=>{
-      if(!it.tanggal) return false;
-      const d = parseISO(it.tanggal);
-      if(d < rf.from || d > rf.to) return false;
-      if(filterNaqib && it.naqib !== filterNaqib) return false;
-      if(filterProgram && it.program !== filterProgram) return false;
-      return true;
-    });
-    callback(filtered);
+function simpanPelanggaran(){
+  if(!currentUser) return alert('Anda belum login.');
+  const naqib = currentUser.naqibName;
+  const nama = document.getElementById('pelSantri').value;
+  const tanggal = document.getElementById('pelTanggal').value;
+  const kategori = document.getElementById('pelKategori').value;
+  const jenis = document.getElementById('pelJenis').value.trim();
+  const level = document.getElementById('pelLevel').value;
+  const catatan = document.getElementById('pelCatatan').value;
+  if(!nama) return alert('Pilih nama.'); if(!jenis) return alert('Isi jenis pelanggaran.');
+  loadAllPelanggaran(list=>{
+    const dup = list.find(p => p.nama === nama && p.jenis === jenis && p.tanggal === tanggal);
+    if(dup) return alert('Duplikasi: Pelanggaran sudah tercatat pada tanggal itu.');
+    simpanPelanggaranOnline({ tanggal, naqib, nama, kategori, jenis, level, catatan });
+    alert('Pelanggaran disimpan.');
+    document.getElementById('pelJenis').value=''; document.getElementById('pelCatatan').value='';
   });
 }
 
-// ---------------------- REKAP HARIAN (Gabungan Program + Per Naqib) ----------------------
-function rekapHarian(){
-  // for daily: admin can set fromDate == toDate (single date). But function supports any range: it groups by tanggal and for each date shows programs
-  loadFilteredRange(list=>{
-    if(!list) return;
-    if(list.length===0){ document.getElementById('rekapArea').innerHTML = '<b>Tidak ada data pada rentang ini.</b>'; return; }
+// REKAP simple
+function rekapHarian(){ loadFilteredRange(list=>{ tampilRekap(list,'Rekap Harian'); }); }
+function rekapPekanan(){ loadFilteredRange(list=>{ tampilRekap(list,'Rekap Pekanan'); }); }
+function rekapBulanan(){ loadFilteredRange(list=>{ tampilRekap(list,'Rekap Bulanan'); }); }
+function tampilkanRekap(){ loadFilteredRange(list=>{ tampilRekap(list,'Semua Data'); }); }
 
-    // group by tanggal -> program -> entries
-    const byDate = {};
-    list.forEach(it=>{
-      const t = it.tanggal;
-      if(!byDate[t]) byDate[t] = {};
-      if(!byDate[t][it.program]) byDate[t][it.program] = [];
-      byDate[t][it.program].push(it);
-    });
+function tampilRekap(list,title){
+  const area = document.getElementById('rekapArea');
+  if(!list.length){ area.innerHTML = "<b>Tidak ada data.</b>"; return; }
+  let html = `<h4>${title}</h4><table><thead><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr></thead><tbody>`;
+  list.forEach(r=>{ html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`; });
+  html += "</tbody></table>";
+  area.innerHTML = html;
+}
 
-    let html = '<h4>Rekap Harian (Per Program → Per Naqib)</h4>';
-
-    const dates = Object.keys(byDate).sort();
-    dates.forEach(date=>{
-      html += `<div style="margin-top:12px;padding:10px;border:1px solid #eee;border-radius:8px"><b>🔹 Tanggal: ${date}</b>`;
-      const programs = Object.keys(byDate[date]).sort();
-      programs.forEach(prog=>{
-        const arr = byDate[date][prog];
-        // overall program summary for this date
-        const total = arr.length;
-        const hadir = arr.filter(x=>x.status==='Hadir').length;
-        const izin = arr.filter(x=>x.status==='Izin').length;
-        const sakit = arr.filter(x=>x.status==='Sakit').length;
-        const alfa = arr.filter(x=>x.status==='Alfa').length;
-        const persen = total? ((hadir/total)*100).toFixed(1) : 0;
-
-        html += `<div style="margin-top:8px;padding:8px;border:1px dashed #ddd;border-radius:6px">
-                  <div class="sectionTitle">Program: ${prog} — Total:${total} | Hadir:${hadir} Izin:${izin} Sakit:${sakit} Alfa:${alfa} — <b>${persen}% hadir</b></div>`;
-
-        // group by naqib within this program
-        const naqibMap = {};
-        arr.forEach(r=>{
-          if(!naqibMap[r.naqib]) naqibMap[r.naqib] = {H:0,I:0,S:0,A:0,total:0};
-          naqibMap[r.naqib].total++;
-          if(r.status==='Hadir') naqibMap[r.naqib].H++;
-          if(r.status==='Izin') naqibMap[r.naqib].I++;
-          if(r.status==='Sakit') naqibMap[r.naqib].S++;
-          if(r.status==='Alfa') naqibMap[r.naqib].A++;
-        });
-
-        html += `<div style="overflow:auto;margin-top:6px"><table><thead><tr><th>Naqib</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th><th>% Hadir</th></tr></thead><tbody>`;
-        Object.keys(naqibMap).sort().forEach(nq=>{
-          const v = naqibMap[nq];
-          const p = v.total? ((v.H / v.total) * 100).toFixed(1) : '0.0';
-          html += `<tr><td>${nq}</td><td>${v.H}</td><td>${v.I}</td><td>${v.S}</td><td>${v.A}</td><td>${p}%</td></tr>`;
-        });
-        html += `</tbody></table></div>`; // end table
-        html += `</div>`; // end program box
-      }); // end programs loop
-      html += `</div>`; // end date box
-    }); // end dates loop
-
-    document.getElementById('rekapArea').innerHTML = html;
+// DATE HELPERS
+function toISODate(d){ const _d = (d instanceof Date) ? d : new Date(d); const y=_d.getFullYear(); const m=String(_d.getMonth()+1).padStart(2,'0'); const day=String(_d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+function parseISO(str){ const p=str.split('-'); return new Date(p[0],p[1]-1,p[2]); }
+function loadFilteredRange(cb){
+  if(!window.loadAllAbsensi) return cb([]);
+  const from = parseISO(document.getElementById('fromDate').value);
+  const to   = parseISO(document.getElementById('toDate').value);
+  loadAllAbsensi(list=>{
+    const f = list.filter(it=>{ const d=parseISO(it.tanggal); return d>=from && d<=to; });
+    cb(f);
   });
 }
 
-// ---------------------- REKAP PER PEKAN ----------------------
-function rekapPekanan(){
-  loadFilteredRange(list=>{
-    if(!list) return;
-    if(list.length===0){ document.getElementById('rekapArea').innerHTML = '<b>Tidak ada data pada rentang ini.</b>'; return; }
-    // group by week-start (Monday)
-    const map = {};
-    list.forEach(it=>{
-      const ws = weekStart(parseISO(it.tanggal));
-      const key = toISODate(ws);
-      if(!map[key]) map[key] = [];
-      map[key].push(it);
+// REPORT: BULANAN PER SANTRI
+// populate bulananSantri when naqib selected
+document.addEventListener('DOMContentLoaded', ()=>{
+  const bn = document.getElementById('bulananNaqib');
+  if(bn){
+    bn.addEventListener('change', function(){
+      const naqib = this.value;
+      const sel = document.getElementById('bulananSantri');
+      sel.innerHTML = '<option value="">-- Pilih Santri --</option>';
+      if(dataSantri[naqib]) dataSantri[naqib].forEach(n=>{ const o=document.createElement('option'); o.value=o.textContent=n; sel.appendChild(o); });
     });
-
-    // build HTML summary per week
-    let html = '<h4>Rekap Per Pekan</h4>';
-    const keys = Object.keys(map).sort();
-    keys.forEach(k=>{
-      const arr = map[k];
-      const ws = parseISO(k);
-      const we = weekEndFromStart(ws);
-      const label = `${toISODate(ws)} → ${toISODate(we)}`;
-      const total = arr.length;
-      const hadir = arr.filter(x=>x.status==='Hadir').length;
-      const izin = arr.filter(x=>x.status==='Izin').length;
-      const sakit = arr.filter(x=>x.status==='Sakit').length;
-      const alfa = arr.filter(x=>x.status==='Alfa').length;
-      const persen = total? ((hadir/total)*100).toFixed(1) : 0;
-      html += `<div style="margin-top:10px;padding:10px;border:1px solid #eee;border-radius:8px">
-                <b>${label}</b><br>
-                Total: ${total} — Hadir:${hadir} Izin:${izin} Sakit:${sakit} Alfa:${alfa} — <b>${persen}% hadir</b>
-               </div>`;
-      // detail tabel tiap minggu
-      html += `<div style="margin-top:6px">
-                <table><thead><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr></thead><tbody>`;
-      arr.sort((a,b)=> a.tanggal.localeCompare(b.tanggal)).forEach(r=>{
-        html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`;
-      });
-      html += `</tbody></table></div>`;
-    });
-
-    document.getElementById('rekapArea').innerHTML = html;
-  });
-}
-
-// ---------------------- REKAP PER BULAN ----------------------
-function rekapBulanan(){
-  loadFilteredRange(list=>{
-    if(!list) return;
-    if(list.length===0){ document.getElementById('rekapArea').innerHTML = '<b>Tidak ada data pada rentang ini.</b>'; return; }
-
-    const map = {};
-    list.forEach(it=>{
-      const d = parseISO(it.tanggal);
-      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; // YYYY-MM
-      if(!map[key]) map[key] = [];
-      map[key].push(it);
-    });
-
-    let html = '<h4>Rekap Per Bulan</h4>';
-    const keys = Object.keys(map).sort();
-    keys.forEach(k=>{
-      const arr = map[k];
-      const total = arr.length;
-      const hadir = arr.filter(x=>x.status==='Hadir').length;
-      const izin = arr.filter(x=>x.status==='Izin').length;
-      const sakit = arr.filter(x=>x.status==='Sakit').length;
-      const alfa = arr.filter(x=>x.status==='Alfa').length;
-      const persen = total? ((hadir/total)*100).toFixed(1) : 0;
-      html += `<div style="margin-top:10px;padding:10px;border:1px solid #eee;border-radius:8px">
-                <b>${k}</b><br>
-                Total: ${total} — Hadir:${hadir} Izin:${izin} Sakit:${sakit} Alfa:${alfa} — <b>${persen}% hadir</b>
-               </div>`;
-      html += `<div style="margin-top:6px">
-                <table><thead><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr></thead><tbody>`;
-      arr.sort((a,b)=> a.tanggal.localeCompare(b.tanggal)).forEach(r=>{
-        html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`;
-      });
-      html += `</tbody></table></div>`;
-    });
-
-    document.getElementById('rekapArea').innerHTML = html;
-  });
-}
-
-// ---------------------- TAMPILKAN REKAP (list semua entri di rentang) ----------------------
-function tampilkanRekap(){
-  loadFilteredRange(list=>{
-    if(!list) return;
-    if(list.length===0){ document.getElementById('rekapArea').innerHTML = '<b>Tidak ada data pada rentang ini.</b>'; return; }
-    let html = '<h4>Daftar Absensi (rentang)</h4>';
-    html += `<table><thead><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr></thead><tbody>`;
-    list.sort((a,b)=> a.tanggal.localeCompare(b.tanggal)).forEach(r=> {
-      html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    document.getElementById('rekapArea').innerHTML = html;
-  });
-}
-
-// ---------------------- EXPORT PDF ----------------------
-function exportPDF(){
-  const container = document.getElementById('rekapArea');
-  if(!container.innerText || container.innerText.trim()==='Pilih rentang tanggal lalu klik Rekap.') return alert('Tidak ada rekap untuk diexport. Silakan tampilkan rekap terlebih dahulu.');
-
-  const tables = container.querySelectorAll('table');
-  const doc = new window.jspdf.jsPDF('p','pt','a4');
-  const title = "Rekap Absensi";
-  const from = document.getElementById('fromDate').value;
-  const to = document.getElementById('toDate').value;
-  const filterNaqib = document.getElementById('adminNaqib').value || 'Semua Naqib';
-  const filterProgram = document.getElementById('filterProgram').value || 'Semua Program';
-  doc.setFontSize(14);
-  doc.text(title, 40, 40);
-  doc.setFontSize(10);
-  doc.text(`Rentang: ${from} sampai ${to}`, 40, 58);
-  doc.text(`Naqib: ${filterNaqib} | Program: ${filterProgram}`, 40, 72);
-
-  let y = 90;
-
-  if(tables.length === 0){
-    const lines = container.innerText.split('\n').filter(l=>l.trim()!=='');
-    const split = doc.splitTextToSize(lines.join('\n'), 520);
-    doc.text(split, 40, y);
-    doc.save(`rekap_${from}_${to}.pdf`);
-    return;
   }
+});
 
-  tables.forEach((tbl, idx) => {
-    // head
-    const thead = tbl.querySelectorAll('thead tr th');
-    const head = [];
-    thead.forEach(th => head.push(th.innerText));
+// generate laporan bulanan
+function generateLaporanBulanan(){
+  const naqib = document.getElementById('bulananNaqib').value;
+  const santri = document.getElementById('bulananSantri').value;
+  const bulan  = parseInt(document.getElementById('bulananBulan').value);
+  const tahun  = parseInt(document.getElementById('bulananTahun').value);
+  if(!naqib || !santri || isNaN(bulan)) return alert('Lengkapi semua pilihan.');
+  const from = new Date(tahun, bulan, 1);
+  const to   = new Date(tahun, bulan+1, 0);
 
-    const body = [];
-    const rows = tbl.querySelectorAll('tbody tr');
-    rows.forEach(tr => {
-      const row = [];
-      tr.querySelectorAll('td').forEach(td => row.push(td.innerText));
-      body.push(row);
+  if(typeof loadAllAbsensi !== 'function') return alert('Firebase belum terhubung (absensi).');
+  loadAllAbsensi(absensi=>{
+    if(typeof loadAllPelanggaran !== 'function') return alert('Firebase belum terhubung (pelanggaran).');
+    loadAllPelanggaran(pelanggaran=>{
+      const abs = absensi.filter(a=> a.naqib===naqib && a.nama===santri && parseISO(a.tanggal)>=from && parseISO(a.tanggal)<=to );
+      const pel = pelanggaran.filter(p=> p.naqib===naqib && p.nama===santri && parseISO(p.tanggal)>=from && parseISO(p.tanggal)<=to );
+
+      const programs = [...new Set(abs.map(a=>a.program))];
+      let tableAbsensi = "";
+      programs.forEach((p,i)=>{
+        const d = abs.filter(a=>a.program===p);
+        const total = d.length;
+        const hadir = d.filter(a=>a.status==="Hadir").length;
+        const izin  = d.filter(a=>a.status==="Izin").length;
+        const sakit = d.filter(a=>a.status==="Sakit").length;
+        const alfa  = d.filter(a=>a.status==="Alfa").length;
+        tableAbsensi += `<tr><td>${i+1}</td><td style="text-align:left">${p}</td><td>${percent(hadir,total)}</td><td>${percent(izin,total)}</td><td>${percent(sakit,total)}</td><td>${percent(alfa,total)}</td></tr>`;
+      });
+
+      let tablePelanggaran = "";
+      pel.forEach((p,i)=>{
+        tablePelanggaran += `<tr><td>${i+1}</td><td>${p.tanggal}</td><td>${p.jenis}</td><td style="text-align:left">${p.catatan||''}</td></tr>`;
+      });
+
+      document.getElementById('lapBulananHasil').innerHTML = `
+        <div>
+          <h2 style="margin:0">LAPORAN KEHADIRAN SANTRI DALAM PROGRAM HARIAN</h2>
+          <p><b>Nama Santri:</b> ${santri}<br><b>Naqib:</b> ${naqib}<br><b>Bulan:</b> ${namaBulan(bulan)} ${tahun}</p>
+
+          <h3>Persentase Kehadiran</h3>
+          <table><thead><tr><th>No</th><th>Program</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th></tr></thead><tbody>
+            ${tableAbsensi || '<tr><td colspan="6">Tidak ada data kehadiran</td></tr>'}
+          </tbody></table>
+
+          <h3 style="margin-top:16px">Laporan Pelanggaran</h3>
+          <table><thead><tr><th>No</th><th>Tanggal</th><th>Pelanggaran</th><th>Catatan</th></tr></thead><tbody>
+            ${tablePelanggaran || '<tr><td colspan="4">Tidak ada pelanggaran</td></tr>'}
+          </tbody></table>
+        </div>
+      `;
+      // store last report html for export convenience
+      window._lastMonthlyReportHTML = document.getElementById('lapBulananHasil').innerHTML;
     });
-
-    // optional section title
-    const prev = tbl.previousElementSibling;
-    let sectionTitle = '';
-    if(prev && prev.tagName.toLowerCase() === 'div'){
-      sectionTitle = prev.innerText.split('\n')[0];
-    } else if (tables.length > 1){
-      sectionTitle = `Tabel ${idx+1}`;
-    }
-
-    if(sectionTitle){
-      doc.setFontSize(11);
-      doc.text(sectionTitle, 40, y);
-      y += 14;
-    }
-
-    doc.autoTable({
-      head: [head],
-      body: body,
-      startY: y,
-      theme: 'grid',
-      margin: {left:40, right:40},
-      styles: {fontSize:9, cellPadding: 3}
-    });
-
-    y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 20 : y + 120;
   });
-
-  doc.save(`rekap_${from}_${to}.pdf`);
 }
 
-// ---------------------- HELPERS (date functions) ----------------------
-function toISODate(d){
-  const y = d.getFullYear(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${day}`;
-}
-function parseISO(dstr){ // expect YYYY-MM-DD
-  const parts = dstr.split('-').map(x=>parseInt(x,10));
-  return new Date(parts[0], parts[1]-1, parts[2]);
-}
-function weekStart(date){
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = (day === 0) ? -6 : (1 - day);
-  d.setDate(d.getDate() + diff);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-function weekEndFromStart(ws){
-  const e = new Date(ws); e.setDate(e.getDate() + 6); return e;
+function percent(x,t){ return t===0 ? "0%" : Math.round((x/t)*100)+"%"; }
+function namaBulan(b){ return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][b]; }
+
+// export PDF
+function exportLaporanBulananPDF(){
+  const area = document.getElementById('lapBulananHasil');
+  if(!area.innerText.trim()) return alert('Tampilkan laporan dulu.');
+  const santri = document.getElementById('bulananSantri').value;
+  const bulan  = parseInt(document.getElementById('bulananBulan').value);
+  const tahun  = document.getElementById('bulananTahun').value;
+  const fileName = `${santri}_${namaBulan(bulan)}_${tahun}.pdf`;
+
+  if(!window.jspdf) return alert('jsPDF belum dimuat.');
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p','pt','a4');
+  doc.setFontSize(14);
+  doc.text(`Laporan Bulanan Santri — ${santri}`, 40, 40);
+  let y = 70;
+  const tables = area.querySelectorAll('table');
+  tables.forEach(tbl=>{
+    const head = []; tbl.querySelectorAll('thead tr th').forEach(th=> head.push(th.innerText));
+    const body = [];
+    tbl.querySelectorAll('tbody tr').forEach(tr=>{
+      const row = []; tr.querySelectorAll('td').forEach(td=> row.push(td.innerText)); body.push(row);
+    });
+    doc.autoTable({ head:[head], body, startY:y, theme:'grid', margin:{left:40,right:40}, styles:{fontSize:9} });
+    y = doc.lastAutoTable.finalY + 20;
+  });
+  doc.save(fileName);
 }
 
-// ---------------------- PLACEHOLDER: functions loadAllAbsensi & simpanOnline are from Firebase module below ----------------------
+// PELANGGARAN REKAP FUNCTIONS
+function rekapPelanggaranAll(){ loadAllPelanggaran(list=>{ list=filterByDateRange(list); tampilRekapPelanggaran("Semua Pelanggaran", list); }); }
+function rekapPelanggaranBaru(){ loadAllPelanggaran(list=>{ list=filterByDateRange(list); const f=list.filter(p=>p.kategori==="Baru"); tampilRekapPelanggaran("Pelanggaran Baru", f); }); }
+function rekapPelanggaranBerulang(){ loadAllPelanggaran(list=>{ list=filterByDateRange(list); const f=list.filter(p=>p.kategori==="Berulang"); tampilRekapPelanggaran("Pelanggaran Berulang", f); }); }
+function tampilRekapPelanggaran(title,list){
+  const area=document.getElementById('rekapArea');
+  if(list.length===0){ area.innerHTML="<b>Tidak ada data pelanggaran dalam rentang ini.</b>"; return; }
+  list.sort((a,b)=> a.tanggal.localeCompare(b.tanggal));
+  let html = `<h3>${title}</h3><h4>Statistik</h4><table><tr><th>Total</th><td>${list.length}</td></tr></table><h4>Histori</h4><table><thead><tr><th>Tanggal</th><th>Naqib</th><th>Santri</th><th>Kategori</th><th>Jenis</th><th>Level</th><th>Catatan</th></tr></thead><tbody>`;
+  list.forEach(p=>{ html+=`<tr><td>${p.tanggal}</td><td>${p.naqib}</td><td>${p.nama}</td><td>${p.kategori}</td><td>${p.jenis}</td><td>${p.level}</td><td>${p.catatan}</td></tr>`; });
+  html += "</tbody></table>";
+  area.innerHTML = html;
+}
 
+// helper filterByDateRange used earlier
+function filterByDateRange(items){
+  const fromEl=document.getElementById('fromDate'), toEl=document.getElementById('toDate');
+  if(!fromEl || !toEl) return items;
+  const from=parseISO(fromEl.value), to=parseISO(toEl.value);
+  return items.filter(it=>{ if(!it.tanggal) return false; const d=parseISO(it.tanggal); return d>=from && d<=to; });
+}
+
+// HAPUS SEMUA PELANGGARAN
+function hapusSemuaPelanggaran(){
+  if(!confirm("Hapus semua pelanggaran?")) return;
+  if(window._firebaseRemovePelanggaran){ window._firebaseRemovePelanggaran().then(()=> alert("Semua pelanggaran dihapus.")); }
+  else alert("Fungsi hapus tidak tersedia. Pastikan Firebase terhubung.");
+}
 </script>
 
-<!-- ======================= FIREBASE MODULE (type=module) ======================= -->
+<!-- FIREBASE MODULE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-  // --- FIREBASE CONFIG (pakai config Abah)
   const firebaseConfig = {
     apiKey: "AIzaSyB0Ez2a85ZwQLR28U-yHpVmM3o8NMxZoLI",
     authDomain: "absensi-santri-fajrul-islam.firebaseapp.com",
@@ -548,24 +511,18 @@ function weekEndFromStart(ws){
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // simpanOnline: push entry ke node 'absensi'
-  window.simpanOnline = function(entry){
-    push(ref(db, 'absensi'), entry);
-  };
+  window.simpanOnline = function(entry){ try{ push(ref(db,'absensi'), entry); }catch(e){ console.error(e); alert('Gagal simpan absensi: '+(e.message||e)); } };
+  window.loadAllAbsensi = function(callback){ const r=ref(db,'absensi'); onValue(r, snapshot=>{ const data = snapshot.val() || {}; const arr = Object.keys(data).map(k=>data[k]); callback(arr); }, err=>{ console.error(err); callback([]); }); };
 
-  // loadAllAbsensi: memanggil callback dengan array object
-  window.loadAllAbsensi = function(callback){
-    const r = ref(db, 'absensi');
-    onValue(r, snapshot => {
-      const data = snapshot.val() || {};
-      // convert keyed object ke array
-      const arr = Object.keys(data).map(k => data[k]);
-      callback(arr);
-    });
-  };
+  window.simpanPelanggaranOnline = function(entry){ try{ push(ref(db,'pelanggaran'), entry); }catch(e){ console.error(e); alert('Gagal simpan pelanggaran: '+(e.message||e)); } };
+  window.loadAllPelanggaran = function(callback){ const r=ref(db,'pelanggaran'); onValue(r, snapshot=>{ const data = snapshot.val() || {}; const arr = Object.keys(data).map(k=>data[k]); callback(arr); }, err=>{ console.error(err); callback([]); }); };
+
+  window._firebaseRemovePelanggaran = function(){ return remove(ref(db,'pelanggaran')); };
+
+  try{ if(!window.firebase){ window.firebase = { database: ()=>({ ref:(p)=>({ remove: ()=> remove(ref(db,p)) }) }) }; } }catch(e){}
 </script>
 
-<!-- ======================= jsPDF + autotable CDN untuk Export PDF ======================= -->
+<!-- jsPDF -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
 
