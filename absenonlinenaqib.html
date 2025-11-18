@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kedisiplinan Santri — Absensi & Rekap Pelanggaran</title>
+<title>Kedisiplinan Santri  Absensi & Rekap Pelanggaran</title>
 <style>
   body{font-family:Arial, sans-serif;padding:18px;background:#f7f7f7}
   h1,h2{margin-top:0}
@@ -22,7 +22,10 @@
   .col{flex:1;min-width:180px}
   .note{background:#fffbe6;border:1px solid #ffe58f;padding:10px;border-radius:6px;margin-top:12px}
   hr.sep{border:none;border-top:1px solid #eee;margin:12px 0}
-  @media(max-width:900px){ .row{flex-direction:column} }
+  .small{font-size:0.85rem;color:#666}
+  @media(max-width:900px){ .row{flex-direction:column} table{font-size:0.8rem} }
+  .kpi-pass{color:green;font-weight:bold}
+  .kpi-fail{color:red;font-weight:bold}
 </style>
 </head>
 <body>
@@ -57,7 +60,7 @@
 
 <!-- ABSENSI -->
 <div class="card hidden" id="absensiPage">
-  <h3>Form Absensi — <span id="naqibLabel2"></span></h3>
+  <h3>Form Absensi  <span id="naqibLabel2"></span></h3>
   <div class="row">
     <div class="col">
       <label>Tanggal:</label>
@@ -120,7 +123,7 @@
   <br>
   <button class="btn alt" onclick="simpanPelanggaran()">Simpan Pelanggaran</button>
   <button class="btn" style="background:#999" onclick="showSection('naqibDashboard')">Kembali</button>
-  <p class="note">Anti-duplikasi: Pelanggaran <b>Nama + Jenis + Tanggal</b> tidak boleh tercatat dua kali.</p>
+  <p class="note">Warning: Isi <b>sedatail-detailnya jenis pelanggaran dan tindakan yang Naqib lakukan pada kolom catatan,</b> cek kembali sebelum disimpan.</p>
 </div>
 
 <!-- ADMIN -->
@@ -161,6 +164,7 @@
   <button class="btn" style="background:#6a1b9a" onclick="rekapPelanggaranAll()">Rekap Pelanggaran</button>
   <button class="btn" style="background:#c2185b" onclick="rekapPelanggaranBaru()">Pelanggaran Baru</button>
   <button class="btn" style="background:#d81b60" onclick="rekapPelanggaranBerulang()">Pelanggaran Berulang</button>
+  <button class="btn" style="background:#ff9800" onclick="cekKPI()">CEK KPI NAQIB</button>
   <button class="btn" style="background:#d32f2f;color:white" onclick="hapusSemuaPelanggaran()">Hapus Semua Pelanggaran</button>
   <button class="btn" style="background:#999" onclick="logout()">Logout</button>
 
@@ -238,9 +242,16 @@ function init(){
   if(adminSel){ adminSel.innerHTML = '<option value="">Semua</option>'; Object.keys(dataSantri).forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=k; adminSel.appendChild(o); }); }
 
   // populate bulananNaqib & bulananSantri
-  const bn = document.getElementById('bulananNaqib'); bn.innerHTML='<option value="">-- Pilih Naqib --</option>';
-  Object.keys(dataSantri).forEach(k=>{ const o=document.createElement('option'); o.value=o.textContent=k; bn.appendChild(o); });
+  const bn = document.getElementById('bulananNaqib'); 
+bn.innerHTML='<option value="">-- Pilih Naqib --</option>';
+Object.keys(dataSantri).forEach(k=>{
+  const o=document.createElement('option'); 
+  o.value = k;
+  o.textContent = k;
+  bn.appendChild(o); 
+});
 
+  // also populate bulananSantri default and admin filterProgram already has entries
   const today = new Date(); const ymd = toISODate(today); const from = new Date(); from.setDate(today.getDate()-7);
   if(document.getElementById('tanggal')) document.getElementById('tanggal').value = ymd;
   if(document.getElementById('pelTanggal')) document.getElementById('pelTanggal').value = ymd;
@@ -290,6 +301,9 @@ function openNaqibPage(user){
       <td><input type="radio" name="${escapeName(n)}" value="Alfa"></td>`;
     body.appendChild(tr);
   });
+  // set pelNaqib label when opening pelanggaran page
+  const pelNaqib = document.getElementById('pelNaqib');
+  if(pelNaqib) pelNaqib.value = user.naqibName || '';
 }
 function escapeName(n){ return n.replace(/[^a-z0-9]/gi,'_'); }
 function checkAll(){ document.querySelectorAll('input[value="Hadir"]').forEach(r=>r.checked=true); }
@@ -334,17 +348,123 @@ function simpanPelanggaran(){
   });
 }
 
-// REKAP simple
-function rekapHarian(){ loadFilteredRange(list=>{ tampilRekap(list,'Rekap Harian'); }); }
-function rekapPekanan(){ loadFilteredRange(list=>{ tampilRekap(list,'Rekap Pekanan'); }); }
-function rekapBulanan(){ loadFilteredRange(list=>{ tampilRekap(list,'Rekap Bulanan'); }); }
-function tampilkanRekap(){ loadFilteredRange(list=>{ tampilRekap(list,'Semua Data'); }); }
+// REKAP utama (tabel per program x naqib)
+function rekapHarian(){
+  // use current fromDate & toDate
+  loadFilteredRange(list=>{
+    renderRekapTable(list, 'Rekap Harian');
+  });
+}
+function rekapPekanan(){
+  // set fromDate to 6 days before toDate
+  const toEl = document.getElementById('toDate');
+  const to = toEl && toEl.value ? parseISO(toEl.value) : new Date();
+  const from = new Date(to); from.setDate(to.getDate()-6);
+  if(document.getElementById('fromDate')) document.getElementById('fromDate').value = toISODate(from);
+  if(document.getElementById('toDate')) document.getElementById('toDate').value = toISODate(to);
+  loadFilteredRange(list=> renderRekapTable(list,'Rekap Pekanan'));
+}
+function rekapBulanan(){
+  // set fromDate to first day of month of toDate, toDate to last day
+  const toEl = document.getElementById('toDate');
+  const now = toEl && toEl.value ? parseISO(toEl.value) : new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
+  const to = new Date(now.getFullYear(), now.getMonth()+1, 0);
+  if(document.getElementById('fromDate')) document.getElementById('fromDate').value = toISODate(from);
+  if(document.getElementById('toDate')) document.getElementById('toDate').value = toISODate(to);
+  loadFilteredRange(list=> renderRekapTable(list,'Rekap Bulanan'));
+}
+function tampilkanRekap(){ loadFilteredRange(list=> renderRekapTable(list,'Semua Data')); }
 
-function tampilRekap(list,title){
+function renderRekapTable(absensiList, title){
+  // build mapping: programs x naqib -> counts {Hadir,Izin,Sakit,Alfa}
+  const programOptions = Array.from(document.querySelectorAll('#program option')).map(o=>o.textContent);
+  const programs = programOptions; // use all programs from select
+  const naqibs = Object.keys(dataSantri);
+  // initialize counts
+  const map = {}; // map[program][naqib] = {Hadir:0,Izin:0,Sakit:0,Alfa:0}
+  programs.forEach(p => {
+    map[p] = {};
+    naqibs.forEach(nq => {
+        map[p][nq] = {Hadir:0, Izin:0, Sakit:0, Alfa:0};
+    });
+});
+
+  // optional filter by adminNaqib or program filters
+  const adminNaqib = document.getElementById('adminNaqib').value;
+  const filterProgram = document.getElementById('filterProgram').value;
+
+  absensiList.forEach(a=>{
+    if(filterProgram && a.program !== filterProgram) return;
+    const prog = a.program;
+    const nq = a.naqib;
+    if(!map[prog]) {
+      // if program not in select (edge), add it
+      map[prog] = {};
+    naqibs.forEach(nq2 => {
+        map[prog][nq2] = {Hadir:0, Izin:0, Sakit:0, Alfa:0};
+    });
+    }
+    if(adminNaqib && adminNaqib !== '' && nq !== adminNaqib) return;
+    if(!map[prog][nq]) map[prog][nq] = {Hadir:0,Izin:0,Sakit:0,Alfa:0};
+    const st = a.status;
+    if(st === 'Hadir') map[prog][nq].Hadir++;
+    else if(st === 'Izin') map[prog][nq].Izin++;
+    else if(st === 'Sakit') map[prog][nq].Sakit++;
+    else if(st === 'Alfa') map[prog][nq].Alfa++;
+  });
+
+  // render table
   const area = document.getElementById('rekapArea');
-  if(!list.length){ area.innerHTML = "<b>Tidak ada data.</b>"; return; }
-  let html = `<h4>${title}</h4><table><thead><tr><th>Tanggal</th><th>Program</th><th>Naqib</th><th>Santri</th><th>Status</th></tr></thead><tbody>`;
-  list.forEach(r=>{ html += `<tr><td>${r.tanggal}</td><td>${r.program}</td><td>${r.naqib}</td><td>${r.nama}</td><td>${r.status}</td></tr>`; });
+  let html = `<h4>${title}</h4><div class="small">Rentang: ${document.getElementById('fromDate').value}  ${document.getElementById('toDate').value}</div>`;
+  html += `<table><thead><tr><th>Program</th>`;
+  naqibs.forEach(nq=> html += `<th>${nq}</th>`);
+  html += `<th>Total Per Program (%)</th></tr></thead><tbody>`;
+
+  // for totals per naqib overall
+  const totalPerNaqib = {}; // {naqib: {Hadir:..., Alfa:...}}
+  naqibs.forEach(nq=> totalPerNaqib[nq] = {Hadir:0,Alfa:0});
+
+  programs.forEach(prog=>{
+    // skip program rows that have no data at all? We'll show all programs
+    html += `<tr><td style="text-align:left">${prog}</td>`;
+    let denomTotal = 0;
+    let sumPercentages = 0;
+    naqibs.forEach(nq=>{
+      const c = (map[prog] && map[prog][nq]) ? map[prog][nq] : {Hadir:0,Izin:0,Sakit:0,Alfa:0};
+      const hadir = c.Hadir || 0;
+      const alfa = c.Alfa || 0;
+      totalPerNaqib[nq].Hadir += hadir;
+      totalPerNaqib[nq].Alfa += alfa;
+      // per rules: Persentase = Hadir / (Hadir + Alfa)
+      const denom = (hadir + alfa);
+      const persen = denom === 0 ? 0 : Math.round((hadir/denom)*100);
+      html += `<td>${persen}%</td>`;
+      sumPercentages += persen;
+      denomTotal++;
+    });
+    // total per program: rata-rata persentase di seluruh naqib (hanya bagi naqib yang ada)
+    const totalProgramPercent = denomTotal === 0 ? 0 : Math.round(sumPercentages/denomTotal);
+    html += `<td>${totalProgramPercent}%</td></tr>`;
+  });
+
+  // last row: Total per Naqib (%)
+  html += `<tr><td style="text-align:left"><b>Total per Naqib (%)</b></td>`;
+  naqibs.forEach(nq=>{
+    const had = totalPerNaqib[nq].Hadir || 0;
+    const alf = totalPerNaqib[nq].Alfa || 0;
+    const denom = had + alf;
+    const persen = denom === 0 ? 0 : Math.round((had/denom)*100);
+    html += `<td><b>${persen}%</b></td>`;
+  });
+  // total overall average
+  const overallPercents = naqibs.map(nq=>{
+    const had = totalPerNaqib[nq].Hadir || 0; const alf = totalPerNaqib[nq].Alfa || 0;
+    const denom = had + alf; return denom===0?0:Math.round((had/denom)*100);
+  });
+  const totalOverall = overallPercents.length===0 ? 0 : Math.round(overallPercents.reduce((a,b)=>a+b,0)/overallPercents.length);
+  html += `<td><b>${totalOverall}%</b></td></tr>`;
+
   html += "</tbody></table>";
   area.innerHTML = html;
 }
@@ -354,16 +474,17 @@ function toISODate(d){ const _d = (d instanceof Date) ? d : new Date(d); const y
 function parseISO(str){ const p=str.split('-'); return new Date(p[0],p[1]-1,p[2]); }
 function loadFilteredRange(cb){
   if(!window.loadAllAbsensi) return cb([]);
-  const from = parseISO(document.getElementById('fromDate').value);
-  const to   = parseISO(document.getElementById('toDate').value);
+  const fromVal = document.getElementById('fromDate').value;
+  const toVal   = document.getElementById('toDate').value;
+  const from = fromVal ? parseISO(fromVal) : new Date(2000,0,1);
+  const to   = toVal ? parseISO(toVal) : new Date();
   loadAllAbsensi(list=>{
-    const f = list.filter(it=>{ const d=parseISO(it.tanggal); return d>=from && d<=to; });
+    const f = list.filter(it=>{ if(!it.tanggal) return false; const d=parseISO(it.tanggal); return d>=from && d<=to; });
     cb(f);
   });
 }
 
-// REPORT: BULANAN PER SANTRI
-// populate bulananSantri when naqib selected
+// REPORT: BULANAN PER SANTRI (sama seperti sebelumnya)
 document.addEventListener('DOMContentLoaded', ()=>{
   const bn = document.getElementById('bulananNaqib');
   if(bn){
@@ -371,12 +492,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const naqib = this.value;
       const sel = document.getElementById('bulananSantri');
       sel.innerHTML = '<option value="">-- Pilih Santri --</option>';
-      if(dataSantri[naqib]) dataSantri[naqib].forEach(n=>{ const o=document.createElement('option'); o.value=o.textContent=n; sel.appendChild(o); });
+      if(dataSantri[naqib]) dataSantri[naqib].forEach(n=>{ const o=document.createElement('option'); o.value = n;
+  o.textContent = n; sel.appendChild(o); });
     });
   }
 });
 
-// generate laporan bulanan
 function generateLaporanBulanan(){
   const naqib = document.getElementById('bulananNaqib').value;
   const santri = document.getElementById('bulananSantri').value;
@@ -435,7 +556,7 @@ function generateLaporanBulanan(){
 function percent(x,t){ return t===0 ? "0%" : Math.round((x/t)*100)+"%"; }
 function namaBulan(b){ return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][b]; }
 
-// export PDF
+// export PDF (sama seperti sebelumnya)
 function exportLaporanBulananPDF(){
   const area = document.getElementById('lapBulananHasil');
   if(!area.innerText.trim()) return alert('Tampilkan laporan dulu.');
@@ -448,7 +569,7 @@ function exportLaporanBulananPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p','pt','a4');
   doc.setFontSize(14);
-  doc.text(`Laporan Bulanan Santri — ${santri}`, 40, 40);
+  doc.text(`Laporan Bulanan Santri  ${santri}`, 40, 40);
   let y = 70;
   const tables = area.querySelectorAll('table');
   tables.forEach(tbl=>{
@@ -463,7 +584,7 @@ function exportLaporanBulananPDF(){
   doc.save(fileName);
 }
 
-// PELANGGARAN REKAP FUNCTIONS
+// PELANGGARAN REKAP FUNCTIONS (sama)
 function rekapPelanggaranAll(){ loadAllPelanggaran(list=>{ list=filterByDateRange(list); tampilRekapPelanggaran("Semua Pelanggaran", list); }); }
 function rekapPelanggaranBaru(){ loadAllPelanggaran(list=>{ list=filterByDateRange(list); const f=list.filter(p=>p.kategori==="Baru"); tampilRekapPelanggaran("Pelanggaran Baru", f); }); }
 function rekapPelanggaranBerulang(){ loadAllPelanggaran(list=>{ list=filterByDateRange(list); const f=list.filter(p=>p.kategori==="Berulang"); tampilRekapPelanggaran("Pelanggaran Berulang", f); }); }
@@ -491,6 +612,101 @@ function hapusSemuaPelanggaran(){
   if(window._firebaseRemovePelanggaran){ window._firebaseRemovePelanggaran().then(()=> alert("Semua pelanggaran dihapus.")); }
   else alert("Fungsi hapus tidak tersedia. Pastikan Firebase terhubung.");
 }
+
+/* =========================
+   FUNGSI CEK KPI
+   ========================= */
+function cekKPI(){
+  const toVal = document.getElementById('toDate').value;
+  const toDate = toVal ? parseISO(toVal) : new Date();
+  const month = toDate.getMonth();
+  const year = toDate.getFullYear();
+
+  const from = new Date(year, month, 1);
+  const to   = new Date(year, month+1, 0);
+
+  loadAllAbsensi(allAbsensi=>{
+    loadAllPelanggaran(allPelanggaran=>{
+
+      const abs = allAbsensi.filter(a=>{
+        if(!a.tanggal) return false;
+        const d = parseISO(a.tanggal);
+        return d>=from && d<=to;
+      });
+
+      const pel = allPelanggaran.filter(p=>{
+        if(!p.tanggal) return false;
+        const d = parseISO(p.tanggal);
+        return d>=from && d<=to;
+      });
+
+      const naqibs = Object.keys(dataSantri);
+
+      const stats = {};
+      naqibs.forEach(nq=> stats[nq] = {
+        Hadir:0,
+        Alfa:0,
+        PelanggaranBaru:0,
+        PelanggaranBerulang:0
+      });
+
+      abs.forEach(a=>{
+        const nq = a.naqib;
+        if(!stats[nq]) return;
+
+        if(a.status === 'Hadir') stats[nq].Hadir++;
+        else if(a.status === 'Alfa') stats[nq].Alfa++;
+        // izin & sakit tidak dihitung
+      });
+
+      pel.forEach(p=>{
+        const nq = p.naqib;
+        if(!stats[nq]) return;
+
+        if(p.kategori === 'Baru') stats[nq].PelanggaranBaru++;
+        if(p.kategori === 'Berulang') stats[nq].PelanggaranBerulang++;
+      });
+
+      let html = `<h3>Hasil CEK KPI — ${namaBulan(month)} ${year}</h3>`;
+      html += `<table><thead><tr>
+        <th>Naqib</th>
+        <th>Kehadiran (%)</th>
+        <th>Pelanggaran Baru</th>
+        <th>Pelanggaran Berulang</th>
+        <th>Status KPI</th>
+      </tr></thead><tbody>`;
+
+      naqibs.forEach(nq=>{
+        const s = stats[nq];
+
+        const total = s.Hadir + s.Alfa;
+        const hadirPercent = total === 0 ? 0 : Math.round((s.Hadir / total) * 100);
+
+        const pass =
+          hadirPercent >= 90 &&
+          s.PelanggaranBaru <= 15 &&
+          s.PelanggaranBerulang <= 5;
+
+        html += `
+          <tr>
+            <td style="text-align:left">${nq}</td>
+            <td>${hadirPercent}%</td>
+            <td>${s.PelanggaranBaru}</td>
+            <td>${s.PelanggaranBerulang}</td>
+            <td style="font-weight:bold;color:${pass ? 'green':'red'}">
+              ${pass ? 'Mencapai KPI' : 'Tidak Mencapai KPI'}
+            </td>
+          </tr>
+        `;
+      });
+
+      html += "</tbody></table>";
+
+      document.getElementById('rekapArea').innerHTML = html;
+    });
+  });
+}
+
 </script>
 
 <!-- FIREBASE MODULE -->
