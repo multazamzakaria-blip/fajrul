@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kedisiplinan Santri — Absensi & Rekap Pelanggaran</title>
+<title>DISIP Online</title>
 
 <style>
   body{font-family:Arial, sans-serif;padding:18px;background:#f7f7f7}
@@ -29,8 +29,8 @@
 </head>
 
 <body>
-<h1>Kedisiplinan Santri</h1>
-<p>Absensi Online dan Rekap Pelanggaran</p>
+<h1>DISIP Online</h1>
+<p>Administrasi Pengasuhan Santri</p>
 
 <!-- LOGIN -->
 <div class="card" id="loginPage">
@@ -184,6 +184,8 @@
       <button class="btn" style="background:#3949ab" onclick="showSection('auditPage')">
         Audit Kebersihan
       </button>
+<button class="btn alt" onclick="showSection('temuanPage')">Temuan Kebersihan (IBSS & BPT)</button>
+<button class="btn" style="background:#c56" onclick="showSection('kasusPage')">Pencatatan Kasus (Bullying/FPF)</button>
     </div>
 
     <div style="margin-left:auto">
@@ -193,6 +195,14 @@
       <button class="btn alt" onclick="tampilkanRekap()">Tampilkan Semua</button>
 <button class="btn" style="background:#ff9800" onclick="cekKPI()">CEK KPI</button>
 <button class="btn alt" onclick="showSection('laporanAuditPage')">Laporan Audit</button>
+<button class="btn" style="background:#00897b" onclick="showSection('lapTemuanPage')">
+  Laporan Temuan Kebersihan
+</button>
+
+<button class="btn" style="background:#c62828" onclick="showSection('lapKasusPage')">
+  Laporan Kasus Bullying & Fatal
+</button>
+
 
 
     </div>
@@ -246,6 +256,7 @@
   <h4 style="margin-top:12px">Hasil Rekap:</h4>
   <div id="rekapArea" style="min-height:200px">Silakan pilih rentang tanggal.</div>
 </div>
+
 
 
 
@@ -336,7 +347,112 @@
   <hr>
   <div id="hasilAuditList">Silakan pilih rentang tanggal.</div>
 </div>
+<!-- LAPORAN TEMUAN KEBERSIHAN -->
+<div class="card hidden" id="lapTemuanPage">
+    <h3>Laporan Temuan Kebersihan (IBSS & BPT)</h3>
 
+    <div class="row">
+        <div class="col">
+            <label>Dari Tanggal:</label>
+            <input type="date" id="ltFrom">
+        </div>
+
+        <div class="col">
+            <label>Sampai Tanggal:</label>
+            <input type="date" id="ltTo">
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+        <div class="col">
+            <label>Pilih Naqib:</label>
+            <select id="ltNaqib">
+                <option value="">Semua</option>
+            </select>
+        </div>
+    </div>
+
+    <br>
+    <button class="btn" onclick="loadLaporanTemuan()">Tampilkan</button>
+    <button class="btn alt" onclick="showSection('adminPage')" style="background:#777">Kembali</button>
+
+    <hr>
+
+    <div id="hasilLaporanTemuan">Silakan pilih rentang tanggal.</div>
+</div>
+<!-- LAPORAN KASUS BULLYING & FATAL -->
+<div class="card hidden" id="lapKasusPage">
+    <h3>Laporan Kasus Bullying & Fatal</h3>
+
+    <div class="row">
+        <div class="col">
+            <label>Dari Tanggal:</label>
+            <input type="date" id="lkFrom">
+        </div>
+
+        <div class="col">
+            <label>Sampai Tanggal:</label>
+            <input type="date" id="lkTo">
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+        <div class="col">
+            <label>Jenis Kasus:</label>
+            <select id="lkJenis">
+                <option value="">Semua</option>
+                <option value="bullying">Bullying</option>
+                <option value="fatal">Fatal</option>
+            </select>
+        </div>
+    </div>
+
+    <br>
+    <button class="btn" onclick="loadLaporanKasus()">Tampilkan</button>
+    <button class="btn alt" onclick="showSection('adminPage')" style="background:#777">Kembali</button>
+
+    <hr>
+
+    <div id="hasilLaporanKasus">Silakan pilih rentang tanggal.</div>
+</div>
+
+<!-- TEMUAN KEBERSIHAN (IBSS & BPT) -->
+<div class="card hidden" id="temuanPage">
+  <h3>Temuan Kebersihan — IBSS & BPT</h3>
+
+  <div class="row">
+    <div class="col">
+      <label>Tanggal:</label>
+      <input type="date" id="tmnTanggal">
+    </div>
+
+    <div class="col">
+      <label>Naqib Penanggung Jawab:</label>
+      <select id="tmnNaqib">
+        <option value="">-- Pilih Naqib --</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:12px">
+    <div class="col">
+      <label>Jumlah Temuan Sampah (IBSS):</label>
+      <input type="number" id="tmnSampah" min="0" value="0">
+    </div>
+
+    <div class="col">
+      <label>Jumlah Barang Pribadi Terlantar (BPT):</label>
+      <input type="number" id="tmnBarang" min="0" value="0">
+    </div>
+  </div>
+
+  <label style="margin-top:12px">Catatan Supervisor:</label>
+  <textarea id="tmnCatatan" rows="3"></textarea>
+
+  <br><br>
+  <button class="btn alt" onclick="simpanTemuan()">Simpan Temuan</button>
+  <button class="btn" style="background:#777" onclick="showSection('adminPage')">Kembali</button>
+</div>
 
 <!-- =====================
      AUDIT KEBERSIHAN (HTML)
@@ -417,6 +533,51 @@
   <button class="btn alt" onclick="simpanAudit()">Simpan Audit</button>
   <button class="btn" style="background:#999" onclick="showSection('adminPage')">Kembali</button>
 </div>
+
+
+<!-- ============= KASUS KRITIS (BARU) ============= -->
+<div class="card hidden" id="kasusPage">
+  <h3>Pencatatan Kasus Kritis (Bullying / Fatal)</h3>
+
+  <div class="row">
+    <div class="col">
+      <label>Tanggal:</label>
+      <input type="date" id="kasusTanggal">
+    </div>
+    <div class="col">
+      <label>Jenis Kasus:</label>
+      <select id="kasusJenis">
+        <option value="Bullying">Bullying</option>
+        <option value="Fatal">Kasus Fatal (FPF)</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Naqib Penanggung Jawab:</label>
+      <select id="kasusNaqib">
+        <option value="">-- Pilih Naqib --</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px">
+    <div class="col">
+      <label>Santri Terlibat (optional):</label>
+      <input type="text" id="kasusSantri" placeholder="Nama santri, koma jika lebih dari satu">
+    </div>
+    <div class="col">
+      <label>Tindakan Supervisor:</label>
+      <input type="text" id="kasusTindakan" placeholder="Tindakan awal / rencana tindak lanjut">
+    </div>
+  </div>
+
+  <label style="margin-top:10px">Deskripsi Singkat:</label>
+  <textarea id="kasusDeskripsi" rows="3"></textarea>
+
+  <br><br>
+  <button class="btn alt" onclick="simpanKasus()">Simpan Kasus</button>
+  <button class="btn" style="background:#999" onclick="showSection('adminPage')">Kembali</button>
+</div>
+
 <script>
 // -------------------- DATA USERS & SANTRI --------------------
 const users = [
@@ -478,6 +639,20 @@ function init(){
     });
   }
 
+  // populate kasus/temuan naqib dropdowns
+  ['tmnNaqib','lapAuditNaqib','auditNaqib','kasusNaqib','kasusNaqib'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = '';
+    const first = document.createElement('option');
+    first.value = '';
+    first.textContent = (id==='lapAuditNaqib' || id==='kasusNaqib') ? 'Semua' : '-- Pilih Naqib --';
+    el.appendChild(first);
+    Object.keys(dataSantri).forEach(k=>{
+      const o=document.createElement('option'); o.value=k; o.textContent=k; el.appendChild(o);
+    });
+  });
+
   const today = new Date();
   const ymd = toISODate(today);
   const from = new Date();
@@ -497,9 +672,10 @@ window.addEventListener('DOMContentLoaded', init);
 // NAV
 function showSection(id){
   const list=[
-    'loginPage','naqibDashboard','absensiPage','pelanggaranPage',
-    'adminPage','lapBulananPage','auditPage','laporanAuditPage'
-  ];
+  'loginPage','naqibDashboard','absensiPage','pelanggaranPage',
+  'adminPage','lapBulananPage','auditPage','laporanAuditPage',
+  'temuanPage','kasusPage','lapTemuanPage','lapKasusPage'
+];
 
   list.forEach(sec=>{
     const el=document.getElementById(sec);
@@ -542,6 +718,7 @@ function logout(){
 }
 
 
+
 // ======= ABSENSI =======
 function openNaqibPage(user){
   const list = dataSantri[user.naqibName] || [];
@@ -575,7 +752,7 @@ function simpan(){
   const rows = document.querySelectorAll('#santriTable tr');
   rows.forEach(row=>{
     const nama = row.children[0].innerText;
-    const status = document.querySelector(`input[name="${escapeName(nama)}"]:checked`).value;
+    const status = document.querySelector(`input[name="${escapeName(nama)}":checked]`)?.value || document.querySelector(`input[name="${escapeName(nama)}"]:checked`).value;
     if(typeof simpanOnline === 'function'){
       simpanOnline({ tanggal, program, naqib, nama, status });
     }
@@ -839,8 +1016,19 @@ function exportLaporanBulananPDF(){
   const doc = new jsPDF('p','pt','a4');
   doc.setFontSize(14);
 
-  doc.text(`Laporan Bulanan Santri — ${santri}`, 40, 40);
-  let y = 70;
+  // ===== HEADING PDF =====
+doc.setFontSize(18);
+doc.text("Laporan Bulanan Santri", 40, 40);
+
+doc.setFontSize(14);
+doc.text("Pesantren Cahaya Fajrul Islam", 40, 65);
+
+doc.setFontSize(12);
+doc.text(`Nama Santri : ${santri}`, 40, 95);
+doc.text(`Nama Naqib  : ${document.getElementById('bulananNaqib').value}`, 40, 115);
+doc.text(`Bulan        : ${namaBulan(bulan)} ${tahun}`, 40, 135);
+
+let y = 160; 
 
   const tables = area.querySelectorAll('table');
   tables.forEach(tbl=>{
@@ -1030,11 +1218,10 @@ function simpanAudit() {
 
 
 // ===================================================
-// CEK KPI (integrasi audit) & render KPI
+// CEK KPI (integrasi audit + temuan + kasus) & render KPI
 // ===================================================
 
 function cekKPI(){
-  // Ambil rentang tanggal (gunakan fromDate/toDate)
   const fromEl = document.getElementById('fromDate');
   const toEl = document.getElementById('toDate');
   if(!fromEl || !toEl) return alert('Masukkan rentang tanggal pada panel Admin.');
@@ -1042,79 +1229,65 @@ function cekKPI(){
   const from = parseISO(fromEl.value);
   const to   = parseISO(toEl.value);
 
-  if(typeof loadAllAbsensi !== 'function' || typeof loadAllPelanggaran !== 'function' || typeof loadAuditByMonth !== 'function'){
-    return alert('Fungsi Firebase (absensi/pelanggaran/audit) belum tersedia.');
+  if(typeof loadAllAbsensi !== 'function' || typeof loadAllPelanggaran !== 'function' || typeof loadAuditByMonth !== 'function' || typeof loadAllTemuan !== 'function' || typeof loadAllKasus !== 'function'){
+    return alert('Fungsi Firebase (absensi/pelanggaran/audit/temuan/kasus) belum tersedia.');
   }
 
+  // load everything in parallel with nested callbacks
   loadAllAbsensi(allAbsensi=>{
     loadAllPelanggaran(allPelanggaran=>{
-      const naqibs = Object.keys(dataSantri);
+      loadAllTemuan(allTemuan=>{
+        loadAllKasus(allKasus=>{
 
-      // initialize stats
-      const stats = {};
-      naqibs.forEach(nq=>{
-        stats[nq] = {Hadir:0,Alfa:0,TotalAbsensi:0,PelanggaranBaru:0,PelanggaranBerulang:0, Audit:0};
-      });
+          const naqibs = Object.keys(dataSantri);
+          const stats = {};
+          naqibs.forEach(nq=>{ stats[nq] = {Hadir:0,Alfa:0,TotalAbsensi:0,PelanggaranBaru:0,PelanggaranBerulang:0, Audit:0, temuanSampah:0, temuanBarang:0, bullying:0, fatal:0}; });
 
-      // filter dan hitung absensi
-      const abs = allAbsensi.filter(a=>{
-        if(!a.tanggal) return false;
-        const d = parseISO(a.tanggal);
-        return d >= from && d <= to;
-      });
+          // absensi
+          const abs = allAbsensi.filter(a=>{ if(!a.tanggal) return false; const d = parseISO(a.tanggal); return d>=from && d<=to; });
+          abs.forEach(a=>{ if(!stats[a.naqib]) return; stats[a.naqib].TotalAbsensi++; if(a.status==='Hadir') stats[a.naqib].Hadir++; if(a.status==='Alfa') stats[a.naqib].Alfa++; });
 
-      abs.forEach(a=>{
-        if(!stats[a.naqib]) return;
-        stats[a.naqib].TotalAbsensi++;
-        if(a.status === 'Hadir') stats[a.naqib].Hadir++;
-        if(a.status === 'Alfa') stats[a.naqib].Alfa++;
-        // izin & sakit tidak mempengaruhi perhitungan persen
-      });
+          // pelanggaran
+          const pel = allPelanggaran.filter(p=>{ if(!p.tanggal) return false; const d = parseISO(p.tanggal); return d>=from && d<=to; });
+          pel.forEach(p=>{ if(!stats[p.naqib]) return; if(p.kategori==='Baru') stats[p.naqib].PelanggaranBaru++; if(p.kategori==='Berulang') stats[p.naqib].PelanggaranBerulang++; });
 
-      // filter dan hitung pelanggaran
-      const pel = allPelanggaran.filter(p=>{
-        if(!p.tanggal) return false;
-        const d = parseISO(p.tanggal);
-        return d >= from && d <= to;
-      });
+          // temuan (IBSS & BPT) - aggregate per naqib within date range
+          const tem = allTemuan.filter(t => { if(!t.tanggal) return false; const d = parseISO(t.tanggal); return d>=from && d<=to; });
+          tem.forEach(t=>{ if(!stats[t.naqib]) return; stats[t.naqib].temuanSampah += Number(t.sampah||0); stats[t.naqib].temuanBarang += Number(t.barang||0); });
 
-      pel.forEach(p=>{
-        if(!stats[p.naqib]) return;
-        if(p.kategori === 'Baru') stats[p.naqib].PelanggaranBaru++;
-        if(p.kategori === 'Berulang') stats[p.naqib].PelanggaranBerulang++;
-      });
+          // kasus kritis
+          const kas = allKasus.filter(k => { if(!k.tanggal) return false; const d = parseISO(k.tanggal); return d>=from && d<=to; });
+          kas.forEach(k=>{ if(!stats[k.naqib]) return; if(k.jenis==='Bullying') stats[k.naqib].bullying++; if(k.jenis==='Fatal') stats[k.naqib].fatal++; });
 
-      // sekarang load audit per naqib (bulan berdasarkan from)
-      const month = from.getMonth();
-      const year  = from.getFullYear();
+          // audits per month (use month of 'from')
+          const month = from.getMonth(); const year = from.getFullYear();
 
-      let pending = naqibs.length;
-      naqibs.forEach(nq=>{
-        // default 0
-        stats[nq].Audit = 0;
-        loadAuditByMonth(nq, month, year, audits=>{
-          if(Array.isArray(audits) && audits.length){
-            // rata-rata total audit untuk bulan itu
-            const sum = audits.reduce((acc, x)=> acc + (Number(x.total) || 0), 0);
-            stats[nq].Audit = Math.round(sum / audits.length);
-          } else {
+          let pending = naqibs.length;
+          naqibs.forEach(nq=>{
             stats[nq].Audit = 0;
-          }
-          pending--;
-          if(pending === 0){
-            // semua data siap -> render
-            renderKPI(stats);
-          }
+            loadAuditByMonth(nq, month, year, audits=>{
+              if(Array.isArray(audits) && audits.length){
+                const sum = audits.reduce((acc,x)=> acc + (Number(x.skor) || 0), 0);
+                stats[nq].Audit = Math.round(sum / audits.length);
+              } else stats[nq].Audit = 0;
+
+              pending--; if(pending===0) renderKPI(stats, from, to);
+            });
+          });
+
         });
       });
-
     });
   });
 }
 
+// render KPI
+function renderKPI(stats, from, to){
+  // compute weeks in range (at least 1)
+  const msPerDay = 24*60*60*1000;
+  const days = Math.max(1, Math.ceil((to - from)/msPerDay)+1);
+  const weeks = Math.max(1, Math.ceil(days/7));
 
-// RENDER KPI ke area rekapArea
-function renderKPI(stats){
   let html = `<h3>CEK KPI Naqib</h3>
     <table>
       <thead>
@@ -1124,6 +1297,10 @@ function renderKPI(stats){
           <th>Pelanggaran Baru</th>
           <th>Pelanggaran Berulang</th>
           <th>Skor Audit</th>
+          <th>Temuan Sampah (wk)</th>
+          <th>Temuan Barang (wk)</th>
+          <th>Bullying</th>
+          <th>Fatal</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -1138,8 +1315,19 @@ function renderKPI(stats){
     const okUlang = s.PelanggaranBerulang <= 5;
     const okAudit = s.Audit >= 85;
 
-    const statusText = (okHadir && okBaru && okUlang && okAudit) ? 'TERCAPAI' : 'TIDAK TERCAPAI';
-    const statusColor = (okHadir && okBaru && okUlang && okAudit) ? 'green' : 'red';
+    // temuan per week
+    const sampahWeek = Math.round(s.temuanSampah / weeks);
+    const barangWeek = Math.round(s.temuanBarang / weeks);
+    const okTemuan = (sampahWeek < 5) && (barangWeek < 5);
+
+    // kasus
+    const okBullying = s.bullying === 0;
+    const okFatal = s.fatal <= 1;
+
+    const overallOk = okHadir && okBaru && okUlang && okAudit && okTemuan && okBullying && okFatal;
+
+    const statusText = overallOk ? 'TERCAPAI' : 'TIDAK TERCAPAI';
+    const statusColor = overallOk ? 'green' : 'red';
 
     html += `<tr>
       <td style="text-align:left">${nq}</td>
@@ -1147,6 +1335,10 @@ function renderKPI(stats){
       <td>${s.PelanggaranBaru}</td>
       <td>${s.PelanggaranBerulang}</td>
       <td>${s.Audit}</td>
+      <td>${sampahWeek}</td>
+      <td>${barangWeek}</td>
+      <td>${s.bullying}</td>
+      <td>${s.fatal}</td>
       <td style="color:${statusColor};font-weight:bold">${statusText}</td>
     </tr>`;
   });
@@ -1318,6 +1510,164 @@ function loadLaporanAudit(){
   area.innerHTML = html;
 }
 </script>
+<!-- ==========================
+     TEMUAN KEBERSIHAN (IBSS & BPT)
+=========================== -->
+
+<script>
+// Inisialisasi dropdown naqib untuk form temuan
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    const sel = document.getElementById("tmnNaqib");
+    if (!sel) return;
+    Object.keys(dataSantri).forEach(n => {
+      const o = document.createElement("option");
+      o.value = n;
+      o.textContent = n;
+      sel.appendChild(o);
+    });
+  } catch (e) {}
+});
+
+
+// Simpan data temuan (IBSS + BPT)
+function simpanTemuan() {
+  const tanggal = document.getElementById("tmnTanggal").value;
+  const naqib = document.getElementById("tmnNaqib").value;
+  const sampah = Number(document.getElementById("tmnSampah").value || 0);
+  const barang = Number(document.getElementById("tmnBarang").value || 0);
+  const catatan = document.getElementById("tmnCatatan").value.trim();
+
+  if (!tanggal || !naqib) {
+    alert("Lengkapi tanggal dan naqib dahulu.");
+    return;
+  }
+
+  const entry = {
+    tanggal,
+    naqib,
+    sampah,
+    barang,
+    catatan,
+    waktu: Date.now()
+  };
+
+  // Simpan ke Firebase
+  window.simpanTemuanOnline(entry);
+  alert("Data temuan kebersihan disimpan.");
+  showSection("adminPage");
+}
+
+
+// LOAD Temuan (untuk laporan nanti)
+function loadAllTemuan(callback) {
+  if (!window.temuanList) return callback([]);
+  callback(window.temuanList);
+}
+function loadLaporanTemuan() {
+    const from = document.getElementById("ltFrom").value;
+    const to = document.getElementById("ltTo").value;
+    const naqib = document.getElementById("ltNaqib").value;
+    const area = document.getElementById("hasilLaporanTemuan");
+
+    if (!from || !to) {
+        area.innerHTML = "<b>Pilih tanggal terlebih dahulu.</b>";
+        return;
+    }
+
+    loadAllTemuan(list => {
+        let data = list.filter(t => t.tanggal >= from && t.tanggal <= to);
+        if (naqib) data = data.filter(t => t.naqib === naqib);
+
+        if (data.length === 0) {
+            area.innerHTML = "<b>Tidak ada data temuan.</b>";
+            return;
+        }
+
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Naqib</th>
+                        <th>Sampah (IBSS)</th>
+                        <th>Barang (BPT)</th>
+                        <th>Catatan</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.forEach(d => {
+            html += `
+                <tr>
+                    <td>${d.tanggal}</td>
+                    <td>${d.naqib}</td>
+                    <td>${d.sampah}</td>
+                    <td>${d.barang}</td>
+                    <td>${d.catatan || "-"}</td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        area.innerHTML = html;
+    });
+}
+function loadLaporanKasus() {
+    const from = document.getElementById("lkFrom").value;
+    const to = document.getElementById("lkTo").value;
+    const jenis = document.getElementById("lkJenis").value;
+    const area = document.getElementById("hasilLaporanKasus");
+
+    if (!from || !to) {
+        area.innerHTML = "<b>Pilih tanggal dahulu.</b>";
+        return;
+    }
+
+    loadAllKasus(list => {
+        let data = list.filter(k => k.tanggal >= from && k.tanggal <= to);
+        if (jenis) data = data.filter(k => k.jenis.toLowerCase() === jenis.toLowerCase());
+
+        if (data.length === 0) {
+            area.innerHTML = "<b>Tidak ada data kasus.</b>";
+            return;
+        }
+
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Jenis</th>
+                        <th>Naqib</th>
+                        <th>Santri</th>
+                        <th>Tindakan</th>
+                        <th>Deskripsi</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.forEach(k => {
+            html += `
+                <tr>
+                    <td>${k.tanggal}</td>
+                    <td>${k.jenis}</td>
+                    <td>${k.naqib}</td>
+                    <td>${k.santri || "-"}</td>
+                    <td>${k.tindakan || "-"}</td>
+                    <td>${k.deskripsi || "-"}</td>
+                </tr>
+            `;
+        });
+
+        html += "</tbody></table>";
+        area.innerHTML = html;
+    });
+}
+
+</script>
 <!-- FIREBASE MODULE -->
 <script type="module">
   import { 
@@ -1442,5 +1792,89 @@ onValue(auditRef, snap => {
     });
   };
 
+  // =========================
+  //      TEMUAN KEBERSIHAN
+  // =========================
+  const temuanRef = ref(db, 'temuanKebersihan');
+  onValue(temuanRef, snap => {
+    const data = snap.val() || {};
+    window.temuanList = Object.keys(data).map(k => data[k]);
+    console.log('Temuan loaded:', window.temuanList);
+  });
+
+  window.simpanTemuanOnline = function(entry){
+    try{
+      push(ref(db, 'temuanKebersihan'), entry);
+    } catch(e){
+      console.error(e);
+      alert('Gagal simpan temuan: ' + (e.message || e));
+    }
+  };
+
+  window.loadAllTemuan = function(callback){
+    const r = ref(db, 'temuanKebersihan');
+    onValue(r, snapshot=>{
+      const data = snapshot.val() || {};
+      const arr = Object.keys(data).map(k => data[k]);
+      callback(arr);
+    }, err=>{ console.error(err); callback([]); });
+  };
+
+  // =========================
+  //      KASUS KRITIS
+  // =========================
+  const kasusRef = ref(db, 'kasusKritis');
+  onValue(kasusRef, snap=>{
+    const data = snap.val() || {};
+    window.kasusList = Object.keys(data).map(k=>data[k]);
+    console.log('Kasus loaded:', window.kasusList);
+  });
+
+  window.simpanKasusOnline = function(entry){
+    try{
+      push(ref(db, 'kasusKritis'), entry);
+    } catch(e){
+      console.error(e);
+      alert('Gagal simpan kasus: ' + (e.message || e));
+    }
+  };
+
+  window.loadAllKasus = function(callback){
+    const r = ref(db, 'kasusKritis');
+    onValue(r, snapshot=>{
+      const data = snapshot.val() || {};
+      const arr = Object.keys(data).map(k => data[k]);
+      callback(arr);
+    }, err=>{ console.error(err); callback([]); });
+  };
+
   console.log("Firebase module loaded successfully.");
 </script>
+
+<!-- ==========================
+     KODE UNTUK LOAD & SIMPAN TEMUAN/KASUS DI UI
+=========================== -->
+<script>
+// simpanKasus (UI)
+function simpanKasus(){
+  const tanggal = document.getElementById('kasusTanggal').value;
+  const jenis = document.getElementById('kasusJenis').value;
+  const naqib = document.getElementById('kasusNaqib').value;
+  const santri = document.getElementById('kasusSantri').value.trim();
+  const tindakan = document.getElementById('kasusTindakan').value.trim();
+  const deskripsi = document.getElementById('kasusDeskripsi').value.trim();
+
+  if(!tanggal || !jenis || !naqib) return alert('Lengkapi tanggal, jenis kasus, dan naqib.');
+
+  const entry = { tanggal, jenis, naqib, santri, tindakan, deskripsi, waktu: Date.now() };
+  window.simpanKasusOnline(entry);
+  alert('Kasus disimpan.');
+  showSection('adminPage');
+}
+</script>
+
+</body>
+</html>
+<!-- jsPDF + AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
