@@ -76,17 +76,26 @@
     <div class="col">
       <label>Program:</label>
       <select id="program">
-        <option>TAHAJJUD</option>
-        <option>SHALAT SUBUH</option>
-        <option>JOGING PAGI</option>
-        <option>SHALAT ZUHUR</option>
-        <option>TIDUR SIANG</option>
-        <option>SHALAT ASHAR</option>
-        <option>SHALAT MAGHRIB</option>
-        <option>SHALAT ISYA</option>
-        <option>TIDUR MALAM</option>
-        <option>PIKET KEBERSIHAN</option>
-      </select>
+  <!-- Program Harian -->
+  <option>Shalat Tahajjud</option>
+  <option>Shalat Subuh</option>
+  <option>Joging Pagi</option>
+  <option>Sarapan</option>
+  <option>Apel Pagi</option>
+  <option>Makan Siang</option>
+  <option>Shalat Zuhur</option>
+  <option>Qailulah</option>
+  <option>Shalat Ashar</option>
+  <option>Piket Kebersihan</option>
+  <option>Makan Sore</option>
+  <option>Shalat Maghrib</option>
+  <option>Shalat Isya</option>
+  <option>Pengecekan Jurnal</option>
+
+  <!-- Program Pekanan -->
+  <option>Puasa Kamis</option>
+  <option>Jemur Kasur</option>
+</select>
     </div>
   </div>
 
@@ -619,8 +628,8 @@ const dataSantri = {
   "Favian":[ "ANGGA PRATAMA PUTRA","PRAWIRO PUJO TUNGGAL JATI","MUHAMMAD MARPIN","MARFEL SAPUTRA","MELDI NOVRIANSYAH","FAUZAN IBNI JABAR","MUHAMMAD FADHIL BUANA","QHEIZAN ALQIZA ARISDA","REZFY FAKHRYAZKA","MIKA RAHEL YUSUF","KI AGUS MUHAMMAD ABDULLAH SHIDDIQ AGTSALI","ARYA DIFA ALSYA","REYNALDI MALIK IBRAHIM ALFARIDZI","MUHAMMAD XAVI NF","MUHAMMAD FAISAL FIKRIANSYAH","HAFIDZ ALRIZKY","NAUFAL AKBAR ALKHATIRI","FARAZH SAYYID PUTRA KENEGA","SYAHRUL RAMADHAN","LUTHFAN ADZAKI","MUHAMMAD ABIL IRWANSYAH","ALIF SAMUDRA","FAHRIE OKTAVIRANO FITRIS"],
   "Dimas":[ "GHOZY FATURRAHMAN","MUHAMMAD THOORIQ","AHMAD RIYADI","ALIF MUHAMMAD YUSUF","BASRI AL HAZIQ ZULFAHMI","MUHAMMAD FAQIH HAFIDZALLAH","ABDULLAH MUKTI HAFIDZALLAH","DEDI SETIADI","FAKHRI AL MUZAKKI","ILHAM MUKMIN AL FARABI","MUHAMMAD ALLAM NUR HUSAIN","MUHAMMAD FIRAAS AL INSYIROH","NABIL NAJMI","SATRIO ABIMAYU","TEGAR HIDAYAT","WAFII FADHLURROHMAN","MUHAMMAD RIJALUL KAMIL","ALVIN HERFIANTINO","ZAHIR ZIBRAN","RADEN AZAA PANCA PUTRA"],
   "Shafwan":[ "AHMAD FARHAAN","ANUGRAH PRATAMA","CAHYIS ISZAM","DIKKI KURNIAWAN","FAHRY AKBAR RAMDHANI","HABIB RAMADHAN","IHZA TRINANDI","ILHAM","M.ARYA MAHDI WAFI EL-FAUZANI","MAHESA AULIA GIFFARI","MUHAMAD YUSUF ARROSIYD","MUHAMMAD RAYYAN HAFIZ","MUHAMMAD USAMAH","NAFIS","RAKA SEPTIAN","RENAL MARTIN","ROHADIN FIRDAUS AL QAUSAR","ROID AFDAL","ZULFAKIH HAERUNNASIHIN"],
-  "Fatimah":[ "NILAM CAHYA","QELZA RAMADHANI ATH THAHIRAH","ASHIFA FITRI RAMADHONI","ADIBA AILA KHANZA","AISYAH NUR KHALIFAH","NYAYU MARLITSA ARDHANI","WILDA","WINDY WINDARI","ALFERA DESTIA","AISYAH NURUL AULIA","NESSYA RAMADHANY","AMIRAH BALQIS RAHADATUL A'ISYAH","EARLYTA ARSYFA SALSABILA","DAFIA NAFLA SYAKIRA","ANISYA SEPTIANI"],
-  "Evita":[ "BILQIS NUR ANISAH","JESSICA PUTRY AYRA","GHENIS ANDIENTIAZ","DINA RUHAYAH","MALWA SHAGIRAH","PITRI RAMADANI","GRINNETA NALANI PUTRI","INAYAH NOURAH ANINDYA","SHELENA","FITRAH KIRANA"]
+  "Fatimah":[ "NILAM CAHYA","QELZA RAMADHANI ATH THAHIRAH","ASHIFA FITRI RAMADHONI","ADIBA AILA KHANZA","AISYAH NUR KHALIFAH","NYAYU MARLITSA ARDHANI","WILDA","WINDY WINDARI","AISYAH NURUL AULIA","NESSYA RAMADHANY","AMIRAH BALQIS RAHADATUL A'ISYAH","EARLYTA ARSYFA SALSABILA","DAFIA NAFLA SYAKIRA","ANISYA SEPTIANI"],
+  "Evita":[ "BILQIS NUR ANISAH","JESSICA PUTRY AYRA","GHENIS ANDIENTIAZ","DINA RUHAYAH","PITRI RAMADANI","GRINNETA NALANI PUTRI","INAYAH NOURAH ANINDYA","SHELENA","FITRAH KIRANA"]
 };
 
 let currentUser = null;
@@ -772,13 +781,19 @@ function simpan(){
   const naqib = currentUser.naqibName;
   if(!tanggal) return alert('Pilih tanggal.');
   const rows = document.querySelectorAll('#santriTable tr');
+
   rows.forEach(row=>{
     const nama = row.children[0].innerText;
-    const status = document.querySelector(`input[name="${escapeName(nama)}":checked]`)?.value || document.querySelector(`input[name="${escapeName(nama)}"]:checked`).value;
+    // ===== Perbaikan utama: letakkan :checked di LUAR tanda petik nama atribut =====
+    const radio = document.querySelector(`input[name="${escapeName(nama)}"]:checked`);
+    // jika tidak ada radio terpilih, set status default 'Hadir'
+    const status = radio ? radio.value : 'Hadir';
+
     if(typeof simpanOnline === 'function'){
       simpanOnline({ tanggal, program, naqib, nama, status });
     }
   });
+
   alert('Absensi tersimpan.');
 }
 
@@ -944,7 +959,24 @@ function generateLaporanBulanan(){
       );
 
       // generate tabel absensi
-      const programs = [...new Set(abs.map(a=>a.program))];
+      const programs = [
+  "Shalat Tahajjud",
+  "Shalat Subuh",
+  "Joging Pagi",
+  "Sarapan",
+  "Apel Pagi",
+  "Makan Siang",
+  "Shalat Zuhur",
+  "Qailulah",
+  "Shalat Ashar",
+  "Piket Kebersihan",
+  "Makan Sore",
+  "Shalat Maghrib",
+  "Shalat Isya",
+  "Pengecekan Jurnal",
+  "Puasa Kamis",
+  "Jemur Kasur"
+];
       let tableAbsensi = "";
 
       programs.forEach((p,i)=>{
@@ -1402,9 +1434,25 @@ function renderRekapTable(absensiList, title){
   }
 
   const programs = [
-    "TAHAJJUD","SHALAT SUBUH","JOGING PAGI","SHALAT ZUHUR","TIDUR SIANG",
-    "SHALAT ASHAR","SHALAT MAGHRIB","SHALAT ISYA","TIDUR MALAM","PIKET KEBERSIHAN"
-  ];
+  "Shalat Tahajjud",
+  "Shalat Subuh",
+  "Joging Pagi",
+  "Sarapan",
+  "Apel Pagi",
+  "Makan Siang",
+  "Shalat Zuhur",
+  "Qailulah",
+  "Shalat Ashar",
+  "Piket Kebersihan",
+  "Makan Sore",
+  "Shalat Maghrib",
+  "Shalat Isya",
+  "Pengecekan Jurnal",
+
+  // Program pekanan (tetap dihitung)
+  "Puasa Kamis",
+  "Jemur Kasur"
+];
 
   const naqibs = Object.keys(dataSantri);
   const map = {};
