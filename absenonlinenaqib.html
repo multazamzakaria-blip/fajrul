@@ -208,6 +208,28 @@
     </div>
   </div>
   <div class="row">
+<div class="col">
+  <label>Pilih Bulan KPI:</label>
+  <select id="kpiBulan">
+    <option value="0">Januari</option>
+    <option value="1">Februari</option>
+    <option value="2">Maret</option>
+    <option value="3">April</option>
+    <option value="4">Mei</option>
+    <option value="5">Juni</option>
+    <option value="6">Juli</option>
+    <option value="7">Agustus</option>
+    <option value="8">September</option>
+    <option value="9">Oktober</option>
+    <option value="10">November</option>
+    <option value="11">Desember</option>
+  </select>
+</div>
+
+<div class="col">
+  <label>Tahun KPI:</label>
+  <input type="number" id="kpiTahun" min="2020" max="2099" value="2025">
+</div>
     <div class="col">
       <label>Dari:</label>
       <input type="date" id="fromDate">
@@ -1222,12 +1244,27 @@ function simpanAudit() {
 // ===================================================
 
 function cekKPI(){
-  const fromEl = document.getElementById('fromDate');
-  const toEl = document.getElementById('toDate');
-  if(!fromEl || !toEl) return alert('Masukkan rentang tanggal pada panel Admin.');
 
-  const from = parseISO(fromEl.value);
-  const to   = parseISO(toEl.value);
+  // Ambil bulan & tahun KPI dari dropdown baru
+  const bulan = parseInt(document.getElementById("kpiBulan").value);
+  const tahun = parseInt(document.getElementById("kpiTahun").value);
+
+  if (isNaN(bulan) || isNaN(tahun)) {
+    return alert("Pilih bulan dan tahun KPI terlebih dahulu.");
+  }
+
+  // Rentang tanggal otomatis dari awal sampai akhir bulan
+  const from = new Date(tahun, bulan, 1);
+  const to   = new Date(tahun, bulan + 1, 0);
+
+  if(typeof loadAllAbsensi !== 'function' || 
+     typeof loadAllPelanggaran !== 'function' ||
+     typeof loadAllTemuan !== 'function' ||
+     typeof loadAllKasus !== 'function' ||
+     typeof loadAuditByMonth !== 'function'){
+    return alert('Fungsi Firebase belum lengkap.');
+  }
+
 
   if(typeof loadAllAbsensi !== 'function' || typeof loadAllPelanggaran !== 'function' || typeof loadAuditByMonth !== 'function' || typeof loadAllTemuan !== 'function' || typeof loadAllKasus !== 'function'){
     return alert('Fungsi Firebase (absensi/pelanggaran/audit/temuan/kasus) belum tersedia.');
