@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DISIP Online</title>
+  <style>
+  table, td, th {
+    font-family: 'Arial', sans-serif !important;
+    letter-spacing: normal;
+  }
+</style>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DISIP Online</title>
 
 <style>
   body{font-family:Arial, sans-serif;padding:18px;background:#f7f7f7}
@@ -54,6 +61,9 @@
     <div>
       <button class="btn" onclick="showSection('absensiPage')">Absensi Program Harian</button>
       <button class="btn alt" onclick="showSection('pelanggaranPage')">Form Pelanggaran Santri</button>
+      <button class="btn" style="background:#6a1b9a" onclick="showSection('perkembanganPage')">
+        Perkembangan Dimensi CAHAYA
+      </button>
     </div>
 
     <div style="margin-left:auto">
@@ -61,7 +71,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- ABSENSI -->
 <div class="card hidden" id="absensiPage">
@@ -178,7 +187,322 @@
     Anti-duplikasi: Pelanggaran <b>Nama + Jenis + Tanggal</b> tidak boleh tercatat dua kali.
   </p>
 </div>
+<!-- PERKEMBANGAN DIMENSI CAHAYA -->
+<div class="card hidden" id="perkembanganPage">
+  <h3>Perkembangan Dimensi CAHAYA — <span id="naqibLabelPerk"></span></h3>
 
+  <div class="row">
+    <div class="col">
+      <label>Tanggal Asesmen:</label>
+      <input type="date" id="perkTanggal">
+    </div>
+
+    <div class="col">
+      <label>Nama Santri:</label>
+      <select id="perkSantri">
+        <option value="">-- Pilih Santri --</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="note">
+    Skala penilaian indikator: 0 = Belum nampak, 1 = Kadang-kadang, 2 = Sering, 3 = Konsisten.
+    Predikat dimensi akan dihitung otomatis dari rata-rata skor indikator.
+  </p>
+
+  <hr class="sep">
+
+  <!-- ================== AKHLAK MULIA ================== -->
+  <h3>II. Akhlak Mulia (Relational / SMILE+)</h3>
+
+  <h4>A. Self Love</h4>
+  <table>
+    <thead>
+      <tr><th>Indikator</th><th>Skor (0–3)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:left">Butterfly Hug</td>
+        <td>
+          <select id="akh_self_butterfly" class="perk-skor" data-dim="akhlak">
+            <option value="0">0 - Belum nampak</option>
+            <option value="1">1 - Kadang</option>
+            <option value="2">2 - Sering</option>
+            <option value="3">3 - Konsisten</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>B. Meaningful Communication</h4>
+  <table>
+    <thead>
+      <tr><th>Indikator</th><th>Skor (0–3)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td style="text-align:left">Mengucap Terima kasih</td>
+        <td><select id="akh_mc_terimakasih" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mengucap Maaf</td>
+        <td><select id="akh_mc_maaf" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mengucap Minta tolong</td>
+        <td><select id="akh_mc_mintatolong" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mengucap Permisi</td>
+        <td><select id="akh_mc_permisi" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Salam & Senyum</td>
+        <td><select id="akh_mc_salam_senyum" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Memuji teman</td>
+        <td><select id="akh_mc_memuji" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Melayani teman</td>
+        <td><select id="akh_mc_melayani" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Memijit teman</td>
+        <td><select id="akh_mc_memijit" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mendoakan teman</td>
+        <td><select id="akh_mc_doateman" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mendoakan orang tua</td>
+        <td><select id="akh_mc_doortu" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mendoakan guru</td>
+        <td><select id="akh_mc_doaguru" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mendoakan Naqib</td>
+        <td><select id="akh_mc_doanaqib" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <h4>C. Intentional Giving</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="text-align:left">Memberi sedekah / hadiah</td>
+        <td>
+          <select id="akh_ig_sedekah" class="perk-skor" data-dim="akhlak">
+            <option value="0">0 - Belum nampak</option>
+            <option value="1">1 - Kadang</option>
+            <option value="2">2 - Sering</option>
+            <option value="3">3 - Konsisten</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>D. Living Together</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left">Khidmat usrah</td>
+        <td><select id="akh_lt_khidmat" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Makan bareng usrah</td>
+        <td><select id="akh_lt_makan" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Olahraga bareng usrah</td>
+        <td><select id="akh_lt_olahraga" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Ngelakar bareng teman usrah</td>
+        <td><select id="akh_lt_ngelakar" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <h4>E. Empathy</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="text-align:left">“Kamu bercerita, aku mendengar”</td>
+        <td>
+          <select id="akh_em_empati" class="perk-skor" data-dim="akhlak">
+            <option value="0">0 - Belum nampak</option>
+            <option value="1">1 - Kadang</option>
+            <option value="2">2 - Sering</option>
+            <option value="3">3 - Konsisten</option>
+          </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>F. Akhlak Pada Alam</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left">Memungut sampah tanpa disuruh</td>
+        <td><select id="akh_al_sampah" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Merapikan yang berantakan tanpa disuruh</td>
+        <td><select id="akh_al_rapi" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Memutar sandal setiap kali masuk kamar/masjid</td>
+        <td><select id="akh_al_sandal" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Menjaga dan merapikan barang pribadi</td>
+        <td><select id="akh_al_barang" class="perk-skor" data-dim="akhlak">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <p><b>Rata-rata Akhlak Mulia:</b> <span id="perkAkhlakAvg">0.00</span> | 
+    <b>Predikat:</b> <span id="perkAkhlakPredikatLabel">-</span>
+    <input type="hidden" id="perkAkhlakPredikat">
+  </p>
+  <label>Catatan Perkembangan Akhlak Mulia:</label>
+  <textarea id="perkAkhlakCatatan" rows="3"></textarea>
+
+  <hr class="sep">
+
+  <!-- ================== HATI BERSIH ================== -->
+  <h3>III. Hati Bersih (Emotional)</h3>
+
+  <h4>A. Rilis Emosi Negatif</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left">Cuci hati sebelum tidur</td>
+        <td><select id="hati_rilis_cucihati" class="perk-skor" data-dim="hati">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Journaling</td>
+        <td><select id="hati_rilis_journal" class="perk-skor" data-dim="hati">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <h4>B. Booster Emosi Positif</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left">Meditasi syukur</td>
+        <td><select id="hati_boost_meditasi" class="perk-skor" data-dim="hati">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Gratitude luck diary</td>
+        <td><select id="hati_boost_gratitude" class="perk-skor" data-dim="hati">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <p><b>Rata-rata Hati Bersih:</b> <span id="perkHatiAvg">0.00</span> | 
+    <b>Predikat:</b> <span id="perkHatiPredikatLabel">-</span>
+    <input type="hidden" id="perkHatiPredikat">
+  </p>
+  <label>Catatan Perkembangan Hati Bersih:</label>
+  <textarea id="perkHatiCatatan" rows="3"></textarea>
+
+  <hr class="sep">
+
+  <!-- ================== FISIK BERDAYA ================== -->
+  <h3>V. Fisik Berdaya (Physical)</h3>
+
+  <h4>A. Kebiasaan Harian</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left">Daily Exercises</td>
+        <td><select id="fisik_harian_exercise" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Qailulah</td>
+        <td><select id="fisik_harian_qailulah" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mandi pagi</td>
+        <td><select id="fisik_harian_mandipagi" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Mandi sore</td>
+        <td><select id="fisik_harian_mandisore" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Sikat gigi sebelum tidur</td>
+        <td><select id="fisik_harian_sikatmalam" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Sikat gigi setelah sarapan</td>
+        <td><select id="fisik_harian_sikatpagi" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Cuci tangan sebelum & sesudah makan</td>
+        <td><select id="fisik_harian_cucitangan" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <h4>B. Kebiasaan Pekanan</h4>
+  <table>
+    <thead><tr><th>Indikator</th><th>Skor (0–3)</th></tr></thead>
+    <tbody>
+      <tr><td style="text-align:left">Puasa Kamis</td>
+        <td><select id="fisik_pekan_puasa" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">PBB</td>
+        <td><select id="fisik_pekan_pbb" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Merapikan kuku</td>
+        <td><select id="fisik_pekan_kuku" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+      <tr><td style="text-align:left">Menjemur kasur, bantal, selimut</td>
+        <td><select id="fisik_pekan_jemur" class="perk-skor" data-dim="fisik">
+          <option value="0">0 - Belum nampak</option><option value="1">1 - Kadang</option>
+          <option value="2">2 - Sering</option><option value="3">3 - Konsisten</option></select></td></tr>
+    </tbody>
+  </table>
+
+  <p><b>Rata-rata Fisik Berdaya:</b> <span id="perkFisikAvg">0.00</span> | 
+    <b>Predikat:</b> <span id="perkFisikPredikatLabel">-</span>
+    <input type="hidden" id="perkFisikPredikat">
+  </p>
+  <label>Catatan Perkembangan Fisik Berdaya:</label>
+  <textarea id="perkFisikCatatan" rows="3"></textarea>
+
+  <hr class="sep">
+
+  <label>Rekomendasi Tindak Lanjut Naqib:</label>
+  <textarea id="perkRekomendasi" rows="3"
+    placeholder="Contoh: diberi amanah kecil di usrah, dilatih konsistensi adab berbicara, dibuat checklist harian kebersihan diri."></textarea>
+
+  <br><br>
+  <button class="btn alt" onclick="simpanPerkembanganCahaya()">Simpan Perkembangan</button>
+  <button class="btn" style="background:#999" onclick="showSection('naqibDashboard')">Kembali</button>
+</div>
 
 <!-- ADMIN PAGE -->
 <div class="card hidden" id="adminPage">
@@ -340,6 +664,7 @@
   <br>
   <button class="btn alt" onclick="generateLaporanBulanan()">Tampilkan</button>
   <button class="btn" style="background:#795548" onclick="exportLaporanBulananPDF()">Export PDF</button>
+<button class="btn" style="background:#2e7d32" onclick="downloadMassalLaporan()">Download Massal (Semua Santri)</button>
   <button class="btn" style="background:#999" onclick="showSection('adminPage')">Kembali</button>
 
   <h3 style="margin-top:20px">Hasil Laporan:</h3>
@@ -702,11 +1027,12 @@ window.addEventListener('DOMContentLoaded', init);
 
 // NAV
 function showSection(id){
-  const list=[
-  'loginPage','naqibDashboard','absensiPage','pelanggaranPage',
-  'adminPage','lapBulananPage','auditPage','laporanAuditPage',
-  'temuanPage','kasusPage','lapTemuanPage','lapKasusPage'
-];
+   const list=[
+    'loginPage','naqibDashboard','absensiPage','pelanggaranPage',
+    'perkembanganPage',
+    'adminPage','lapBulananPage','auditPage','laporanAuditPage',
+    'temuanPage','kasusPage','lapTemuanPage','lapKasusPage'
+  ];
 
   list.forEach(sec=>{
     const el=document.getElementById(sec);
@@ -768,6 +1094,29 @@ function openNaqibPage(user){
   // set pelNaqib for pelanggaran form
   const pelNaqib = document.getElementById('pelNaqib');
   if(pelNaqib) pelNaqib.value = user.naqibName;
+
+  // Perkembangan Dimensi CAHAYA: label & dropdown santri
+  const perkLabel = document.getElementById('naqibLabelPerk');
+  if(perkLabel) perkLabel.textContent = user.label;
+
+  const perkSantri = document.getElementById('perkSantri');
+  if(perkSantri){
+    perkSantri.innerHTML = '<option value="">-- Pilih Santri --</option>';
+    list.forEach(n=>{
+      const o = document.createElement('option');
+      o.value = n;
+      o.textContent = n;
+      perkSantri.appendChild(o);
+    });
+  }
+
+  const tPerk = document.getElementById('perkTanggal');
+  if(tPerk) tPerk.value = toISODate(new Date());
+
+  // reset tampilan skor & predikat
+  if(typeof updatePerkembanganDimensi === 'function'){
+    updatePerkembanganDimensi();
+  }
 }
 
 function escapeName(n){ return n.replace(/[^a-z0-9]/gi,'_'); }
@@ -837,7 +1186,70 @@ function simpanPelanggaran(){
     document.getElementById('pelCatatan').value = '';
   });
 }
+// ======= PERKEMBANGAN DIMENSI CAHAYA =======
+function simpanPerkembanganCahaya(){
+  if(!currentUser || currentUser.role !== 'naqib'){
+    alert('Hanya naqib yang dapat mengisi Perkembangan Dimensi CAHAYA.');
+    return;
+  }
 
+  const tanggal = document.getElementById('perkTanggal').value;
+  const nama    = document.getElementById('perkSantri').value;
+  if(!tanggal || !nama){
+    alert('Lengkapi tanggal dan nama santri.');
+    return;
+  }
+
+  const naqib = currentUser.naqibName;
+
+  // pastikan predikat sudah dihitung
+  updatePerkembanganDimensi();
+
+  const akhlakPredikat = document.getElementById('perkAkhlakPredikat').value || '';
+  const hatiPredikat   = document.getElementById('perkHatiPredikat').value   || '';
+  const fisikPredikat  = document.getElementById('perkFisikPredikat').value  || '';
+
+  const akhlakCatatan = document.getElementById('perkAkhlakCatatan').value || '';
+  const hatiCatatan   = document.getElementById('perkHatiCatatan').value   || '';
+  const fisikCatatan  = document.getElementById('perkFisikCatatan').value  || '';
+  const rekomendasi   = document.getElementById('perkRekomendasi').value   || '';
+
+  const d = parseISO(tanggal);
+  const tahun = d.getFullYear();
+  const bulan = d.getMonth();
+
+  // kumpulkan semua indikator
+  const indikator = {};
+  document.querySelectorAll('select.perk-skor').forEach(sel=>{
+    if(sel.id){
+      indikator[sel.id] = Number(sel.value || 0);
+    }
+  });
+
+  const entry = {
+    tanggal,
+    tahun,
+    bulan,
+    naqib,
+    nama,
+    akhlakPredikat,
+    akhlakCatatan,
+    hatiPredikat,
+    hatiCatatan,
+    fisikPredikat,
+    fisikCatatan,
+    rekomendasi,
+    indikator
+  };
+
+  if(typeof window.simpanPerkembanganCahayaOnline !== 'function'){
+    alert('Fungsi Firebase untuk Perkembangan Dimensi CAHAYA belum tersedia.');
+    return;
+  }
+
+  window.simpanPerkembanganCahayaOnline(entry);
+  alert('Perkembangan Dimensi CAHAYA tersimpan.');
+}
 
 // ======= REKAP / TAMPILAN =======
 function rekapHarian(){
@@ -921,196 +1333,350 @@ function namaBulan(b){
   return ["Januari","Februari","Maret","April","Mei","Juni","Juli",
           "Agustus","September","Oktober","November","Desember"][b];
 }
+function skorToPredikat(avg){
+  if(isNaN(avg) || avg <= 0) return 'Kurang Baik';
+  if(avg < 1) return 'Kurang Baik';
+  if(avg < 2) return 'Cukup Baik';
+  if(avg < 2.75) return 'Baik';
+  return 'Sangat Baik';
+}
+function skorToPredikat(avg){
+  if(isNaN(avg) || avg <= 0) return 'Kurang Baik';
+  if(avg < 1) return 'Kurang Baik';
+  if(avg < 2) return 'Cukup Baik';
+  if(avg < 2.75) return 'Baik';
+  return 'Sangat Baik';
+}
+function narasiDimensiCAHAYA(dim, nama, predikat, catatan){
+  if(!predikat) return '';
 
-function generateLaporanBulanan(){
+  let judul = '';
+  let kalimat = '';
+
+  if(dim === 'akhlak'){
+    judul = 'Akhlak Mulia (Relational)';
+    if(predikat === 'Kurang Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} masih memerlukan banyak bimbingan dalam aspek akhlak dan hubungan sosial. Beberapa adab dasar seperti mengucap terima kasih, meminta maaf, dan meminta tolong dengan cara yang santun belum tampak konsisten.`;
+    } else if(predikat === 'Cukup Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} mulai menunjukkan akhlak yang cukup baik dalam pergaulan sehari-hari. Santri sudah beberapa kali mengucap terima kasih, meminta maaf, dan meminta tolong dengan cara yang sopan, meskipun konsistensinya masih naik-turun.`;
+    } else if(predikat === 'Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} menunjukkan akhlak yang baik: umumnya sopan, kooperatif, dan berusaha menjaga adab dalam berbicara maupun berinteraksi dengan teman dan guru.`;
+    } else if(predikat === 'Sangat Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} menunjukkan akhlak yang sangat baik. Santri tampak sopan dalam berbicara, menghormati guru dan naqib, serta menjaga adab saat bersama teman.`;
+    }
+  } else if(dim === 'hati'){
+    judul = 'Hati Bersih (Emotional)';
+    if(predikat === 'Kurang Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} masih sering kesulitan dalam mengelola emosi dan membersihkan hati. Saat menghadapi teguran atau perbedaan pendapat, santri tampak mudah tersinggung dan memendam kesal.`;
+    } else if(predikat === 'Cukup Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} mulai berproses menuju hati yang lebih bersih. Santri sesekali mencoba memaafkan dan merapikan perasaan sebelum tidur, meskipun belum konsisten.`;
+    } else if(predikat === 'Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} menunjukkan kemampuan pengelolaan emosi yang baik. Saat mengalami kejadian yang tidak menyenangkan, santri relatif mampu menenangkan diri dan tidak terlalu larut dalam amarah atau kesedihan.`;
+    } else if(predikat === 'Sangat Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} menunjukkan hati yang bersih dan emosi yang matang. Santri tampak mudah memaafkan, tidak berlarut-larut dalam rasa marah atau kecewa, dan mampu merespon masalah dengan tenang.`;
+    }
+  } else if(dim === 'fisik'){
+    judul = 'Fisik Berdaya (Physical)';
+    if(predikat === 'Kurang Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} masih sering lalai dalam menjaga kebersihan, kesehatan, dan kedisiplinan fisik. Kebiasaan dasar seperti mandi, sikat gigi, dan mencuci tangan belum terjaga dengan baik.`;
+    } else if(predikat === 'Cukup Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} mulai berusaha menjaga fisik dengan cukup baik. Sebagian kebiasaan harian sudah dilakukan, walaupun masih ada hari-hari di mana santri lalai atau perlu diingatkan.`;
+    } else if(predikat === 'Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} tampak cukup baik dalam menjaga kebersihan dan kesehatan fisik. Kebiasaan mandi, sikat gigi, dan cuci tangan umumnya terlaksana dengan baik, dan santri relatif mengikuti latihan fisik.`;
+    } else if(predikat === 'Sangat Baik'){
+      kalimat = `Bulan ini, Ananda ${nama} menunjukkan komitmen yang sangat baik dalam menjaga fisik yang sehat dan berdaya. Kebiasaan harian dan pekanan dijalankan dengan disiplin dan jarang sekali terlewat.`;
+    }
+  }
+
+  if(!kalimat) return '';
+
+  let html = `<p><b>${judul}</b><br>${kalimat}</p>`;
+  if(catatan && catatan.trim() !== ''){
+    html += `<p><i>Catatan Naqib:</i> ${catatan}</p>`;
+  }
+  return html;
+}
+function generateLaporanBulanan() {
   const naqib = document.getElementById('bulananNaqib').value;
   const santri = document.getElementById('bulananSantri').value;
   const bulan  = parseInt(document.getElementById('bulananBulan').value);
   const tahun  = parseInt(document.getElementById('bulananTahun').value);
 
-  if(!naqib || !santri || isNaN(bulan)) 
+  if (!naqib || !santri || isNaN(bulan))
     return alert('Lengkapi semua pilihan.');
 
   const from = new Date(tahun, bulan, 1);
-  const to   = new Date(tahun, bulan+1, 0);
+  const to   = new Date(tahun, bulan + 1, 0);
 
-  if(typeof loadAllAbsensi !== 'function'){
+  if (typeof loadAllAbsensi !== 'function') {
     return alert('Firebase belum terhubung (absensi).');
   }
 
-  loadAllAbsensi(absensi=>{
-    if(typeof loadAllPelanggaran !== 'function'){
+  loadAllAbsensi(absensi => {
+    if (typeof loadAllPelanggaran !== 'function') {
       return alert('Firebase belum terhubung (pelanggaran).');
     }
 
-    loadAllPelanggaran(pelanggaran=>{
-      const abs = absensi.filter(a =>
-        a.naqib===naqib &&
-        a.nama===santri &&
-        parseISO(a.tanggal)>=from &&
-        parseISO(a.tanggal)<=to
-      );
+    loadAllPelanggaran(pelanggaran => {
 
-      const pel = pelanggaran.filter(p =>
-        p.naqib===naqib &&
-        p.nama===santri &&
-        parseISO(p.tanggal)>=from &&
-        parseISO(p.tanggal)<=to
-      );
+      const lanjutDenganPerkembangan = (perkList = []) => {
 
-      // generate tabel absensi
-      const programs = [
-  "Shalat Tahajjud",
-  "Shalat Subuh",
-  "Joging Pagi",
-  "Sarapan",
-  "Apel Pagi",
-  "Makan Siang",
-  "Shalat Zuhur",
-  "Qailulah",
-  "Shalat Ashar",
-  "Piket Kebersihan",
-  "Makan Sore",
-  "Shalat Maghrib",
-  "Shalat Isya",
-  "Pengecekan Jurnal",
-  "Puasa Kamis",
-  "Jemur Kasur"
-];
-      let tableAbsensi = "";
+        // ====== FILTER DATA ABSENSI & PELANGGARAN ======
+        const abs = absensi.filter(a =>
+          a.naqib === naqib &&
+          a.nama  === santri &&
+          parseISO(a.tanggal) >= from &&
+          parseISO(a.tanggal) <= to
+        );
 
-      programs.forEach((p,i)=>{
-        const d = abs.filter(a=>a.program===p);
-        const total = d.length;
-        const hadir = d.filter(a=>a.status==="Hadir").length;
-        const izin  = d.filter(a=>a.status==="Izin").length;
-        const sakit = d.filter(a=>a.status==="Sakit").length;
-        const alfa  = d.filter(a=>a.status==="Alfa").length;
+        const pel = pelanggaran.filter(p =>
+          p.naqib === naqib &&
+          p.nama  === santri &&
+          parseISO(p.tanggal) >= from &&
+          parseISO(p.tanggal) <= to
+        );
 
-        tableAbsensi += `
-          <tr>
-            <td>${i+1}</td>
-            <td style="text-align:left">${p}</td>
-            <td>${percent(hadir,total)}</td>
-            <td>${percent(izin,total)}</td>
-            <td>${percent(sakit,total)}</td>
-            <td>${percent(alfa,total)}</td>
-          </tr>
-        `;
-      });
+        // ====== TABEL ABSENSI ======
+        const programs = [
+          "Shalat Tahajjud",
+          "Shalat Subuh",
+          "Joging Pagi",
+          "Sarapan",
+          "Apel Pagi",
+          "Makan Siang",
+          "Shalat Zuhur",
+          "Qailulah",
+          "Shalat Ashar",
+          "Piket Kebersihan",
+          "Makan Sore",
+          "Shalat Maghrib",
+          "Shalat Isya",
+          "Pengecekan Jurnal",
+          "Puasa Kamis",
+          "Jemur Kasur"
+        ];
 
-      // generate tabel pelanggaran
-      let tablePelanggaran = "";
-      pel.forEach((p,i)=>{
-        tablePelanggaran += `
-          <tr>
-            <td>${i+1}</td>
-            <td>${p.tanggal}</td>
-            <td>${p.jenis}</td>
-            <td style="text-align:left">${p.catatan||''}</td>
-          </tr>
-        `;
-      });
+        let tableAbsensi = "";
+        programs.forEach((p, i) => {
+          const d     = abs.filter(a => a.program === p);
+          const total = d.length;
+          const hadir = d.filter(a => a.status === "Hadir").length;
+          const izin  = d.filter(a => a.status === "Izin").length;
+          const sakit = d.filter(a => a.status === "Sakit").length;
+          const alfa  = d.filter(a => a.status === "Alfa").length;
 
-      // isi ke halaman
-      document.getElementById('lapBulananHasil').innerHTML = `
-        <div>
-          <h2 style="margin:0">LAPORAN KEHADIRAN SANTRI</h2>
-          <p>
-            <b>Nama Santri:</b> ${santri}<br>
-            <b>Naqib:</b> ${naqib}<br>
-            <b>Bulan:</b> ${namaBulan(bulan)} ${tahun}
-          </p>
+          tableAbsensi += `
+            <tr>
+              <td>${i + 1}</td>
+              <td style="text-align:left">${p}</td>
+              <td>${percent(hadir, total)}</td>
+              <td>${percent(izin, total)}</td>
+              <td>${percent(sakit, total)}</td>
+              <td>${percent(alfa, total)}</td>
+            </tr>
+          `;
+        });
 
-          <h3>Persentase Kehadiran</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>No</th><th>Program</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tableAbsensi || '<tr><td colspan="6">Tidak ada data</td></tr>'}
-            </tbody>
-          </table>
+        // ====== TABEL PELANGGARAN ======
+        let tablePelanggaran = "";
+        pel.forEach((p, i) => {
+          tablePelanggaran += `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${p.tanggal}</td>
+              <td>${p.jenis}</td>
+              <td style="text-align:left">${p.catatan || ''}</td>
+            </tr>
+          `;
+        });
+        if (!tablePelanggaran) {
+          tablePelanggaran = '<tr><td colspan="4">Tidak ada data</td></tr>';
+        }
 
-          <h3 style="margin-top:16px">Laporan Pelanggaran</h3>
-          <table>
-            <thead>
-              <tr><th>No</th><th>Tanggal</th><th>Pelanggaran</th><th>Catatan</th></tr>
-            </thead>
-            <tbody>
-              ${tablePelanggaran || '<tr><td colspan="4">Tidak ada data</td></tr>'}
-            </tbody>
-          </table>
-        </div>
-      `;
+        // ====== NARASI PERKEMBANGAN DIMENSI CAHAYA ======
+        let narasiHtml = '';
 
-      // simpan untuk export
-      window._lastMonthlyReportHTML = document.getElementById('lapBulananHasil').innerHTML;
-    });
-  });
+        const dataSantri = perkList
+          .filter(a =>
+            a.naqib === naqib &&
+            a.nama  === santri &&
+            parseISO(a.tanggal) >= from &&
+            parseISO(a.tanggal) <= to
+          )
+          .sort((a, b) => a.tanggal.localeCompare(b.tanggal));
+
+       if (dataSantri.length) {
+  const a = dataSantri[dataSantri.length - 1]; // asesmen terakhir
+
+  // === Narasi otomatis berdasarkan predikat ===
+  const nAkhlak = narasiDimensiCAHAYA('akhlak', santri, a.akhlakPredikat, a.akhlakCatatan);
+  const nHati   = narasiDimensiCAHAYA('hati', santri, a.hatiPredikat, a.hatiCatatan);
+  const nFisik  = narasiDimensiCAHAYA('fisik', santri, a.fisikPredikat, a.fisikCatatan);
+
+  narasiHtml = `
+    <h3 style="margin-top:10px">Catatan Perkembangan Dimensi CAHAYA Bulan Ini:</h3>
+
+    <div style="background:#E9F7EF;border:1px solid #2E7D32;padding:10px;border-radius:8px;margin-bottom:8px;">
+      ${nAkhlak}
+    </div>
+
+    <div style="background:#E3F2FD;border:1px solid #1565C0;padding:10px;border-radius:8px;margin-bottom:8px;">
+      ${nHati}
+    </div>
+
+    <div style="background:#FFF3E0;border:1px solid #EF6C00;padding:10px;border-radius:8px;margin-bottom:8px;">
+      ${nFisik}
+    </div>
+
+    <div style="background:#FFF8E1;border:1px solid #FBC02D;padding:10px;border-radius:8px;">
+      <b>Rekomendasi Tindak Lanjut Naqib</b><br>
+      ${a.rekomendasi || '-'}
+    </div>
+  `;
 }
 
 
-// ========================================================
-//                EXPORT PDF (Laporan Bulanan)
-// ========================================================
-function exportLaporanBulananPDF(){
-  const area = document.getElementById('lapBulananHasil');
-  if(!area.innerText.trim()) return alert('Tampilkan laporan dulu.');
+        // ====== RENDER KE HALAMAN ======
+        document.getElementById('lapBulananHasil').innerHTML = `
+          <div>
+            <h2 style="margin:0">LAPORAN BULANAN SANTRI</h2>
+<h2 style="margin:0">PESANTREN CAHAYA FAJRUL ISLAM</h2>
+            <p>
+              <b>Nama Santri:</b> ${santri}<br>
+              <b>Naqib:</b> ${naqib}<br>
+              <b>Bulan:</b> ${namaBulan(bulan)} ${tahun}
+            </p>
 
-  const santri = document.getElementById('bulananSantri').value;
-  const bulan  = parseInt(document.getElementById('bulananBulan').value);
-  const tahun  = document.getElementById('bulananTahun').value;
-  const fileName = `${santri}_${namaBulan(bulan)}_${tahun}.pdf`;
+            ${narasiHtml}
 
-  if(!window.jspdf) return alert('jsPDF belum dimuat.');
+            <h3>Persentase Kehadiran</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th><th>Program</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alfa</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableAbsensi || '<tr><td colspan="6">Tidak ada data</td></tr>'}
+              </tbody>
+            </table>
+
+            <h3 style="margin-top:16px">Laporan Pelanggaran</h3>
+            <table>
+              <thead>
+                <tr><th>No</th><th>Tanggal</th><th>Pelanggaran</th><th>Catatan</th></tr>
+              </thead>
+              <tbody>
+                ${tablePelanggaran}
+              </tbody>
+            </table>
+          </div>
+        `;
+
+        window._lastMonthlyReportHTML = document.getElementById('lapBulananHasil').innerHTML;
+      };
+
+      if (typeof loadAllPerkembanganCahaya === 'function') {
+        loadAllPerkembanganCahaya(lanjutDenganPerkembangan);
+      } else {
+        lanjutDenganPerkembangan([]);
+      }
+    });
+  });
+}
+// ========================================================
+//      EXPORT PDF (Laporan Bulanan) dengan Emoji Ikon
+// ========================================================
+function exportLaporanBulananPDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p','pt','a4');
+  const doc = new jsPDF("p", "pt", "a4");
+
+  const naqib = document.getElementById("bulananNaqib").value || "-";
+  const santri = document.getElementById("bulananSantri").value || "-";
+  const bulanIndex = Number(document.getElementById("bulananBulan").value || 0);
+  const tahun = document.getElementById("bulananTahun").value || new Date().getFullYear();
+  const namaBulan = [
+    "Januari","Februari","Maret","April","Mei","Juni",
+    "Juli","Agustus","September","Oktober","November","Desember"
+  ];
+
+  // Header tanpa logo dan tanpa simbol
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
+  doc.text("LAPORAN BULANAN SANTRI", 300, 40, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.text(`Nama Santri : ${santri}`, 50, 70);
+  doc.text(`Naqib        : ${naqib}`, 50, 85);
+  doc.text(`Bulan        : ${namaBulan[bulanIndex]} ${tahun}`, 50, 100);
 
-  // ===== HEADING PDF =====
-doc.setFontSize(18);
-doc.text("Laporan Bulanan Santri", 40, 40);
+  // Ambil isi laporan dari HTML
+  const laporan = document.getElementById("lapBulananHasil");
 
-doc.setFontSize(14);
-doc.text("Pesantren Cahaya Fajrul Islam", 40, 65);
-
-doc.setFontSize(12);
-doc.text(`Nama Santri : ${santri}`, 40, 95);
-doc.text(`Nama Naqib  : ${document.getElementById('bulananNaqib').value}`, 40, 115);
-doc.text(`Bulan        : ${namaBulan(bulan)} ${tahun}`, 40, 135);
-
-let y = 160; 
-
-  const tables = area.querySelectorAll('table');
-  tables.forEach(tbl=>{
-    const head = [];
-    tbl.querySelectorAll('thead tr th').forEach(th=> head.push(th.innerText));
-
-    const body = [];
-    tbl.querySelectorAll('tbody tr').forEach(tr=>{
-      const row = [];
-      tr.querySelectorAll('td').forEach(td=> row.push(td.innerText));
-      body.push(row);
-    });
-
-    doc.autoTable({
-      head:[head],
-      body,
-      startY:y,
-      theme:'grid',
-      margin:{left:40,right:40},
-      styles:{fontSize:9}
-    });
-
-    y = doc.lastAutoTable.finalY + 20;
+  // Render ke PDF tanpa emoji/simbol
+  doc.html(laporan, {
+    x: 40,
+    y: 120,
+    html2canvas: {
+      scale: 0.7,
+      ignoreElements: (el) =>
+        el.tagName === "IMG" ||
+        el.classList.contains("icon") ||
+        el.textContent.match(/[Ø=ÜÛÚ]/),
+    },
+    callback: function (doc) {
+      doc.save(`Laporan_${santri}_${namaBulan[bulanIndex]}_${tahun}.pdf`);
+    },
   });
+}
+async function downloadMassalLaporan() {
+  const naqib = document.getElementById('bulananNaqib').value;
+  const bulan = document.getElementById('bulananBulan').value;
+  const tahun = document.getElementById('bulananTahun').value;
 
-  doc.save(fileName);
+  if (!naqib) return alert('Pilih naqib terlebih dahulu.');
+  if (bulan === '' || !tahun) return alert('Lengkapi bulan dan tahun.');
+
+  const santriList = dataSantri[naqib] || [];
+  if (santriList.length === 0) return alert('Tidak ada santri pada naqib ini.');
+
+  alert(`Memulai download ${santriList.length} laporan PDF...`);
+  
+  for (let i = 0; i < santriList.length; i++) {
+    const namaSantri = santriList[i];
+    // tampilkan laporan per santri
+    await generateLaporanBulananMassal(naqib, namaSantri, bulan, tahun);
+    // jeda sebentar agar render stabil sebelum ekspor PDF
+    await new Promise(resolve => setTimeout(resolve, 600));
+    await exportLaporanBulananPDFMassal(namaSantri, bulan, tahun);
+    await new Promise(resolve => setTimeout(resolve, 400));
+  }
+
+  alert('Semua laporan berhasil diunduh.');
 }
 
+// versi massal dari fungsi tampil laporan
+async function generateLaporanBulananMassal(naqib, santri, bulan, tahun) {
+  document.getElementById('bulananNaqib').value = naqib;
+  document.getElementById('bulananSantri').innerHTML = `<option>${santri}</option>`;
+  document.getElementById('bulananSantri').value = santri;
+  document.getElementById('bulananBulan').value = bulan;
+  document.getElementById('bulananTahun').value = tahun;
+  await generateLaporanBulanan();
+}
+
+// versi massal dari fungsi export PDF
+async function exportLaporanBulananPDFMassal(namaSantri, bulan, tahun) {
+  const element = document.getElementById('lapBulananHasil');
+  const opt = {
+    margin: 0.5,
+    filename: `${namaSantri.replace(/\s+/g, '_')}_Laporan_${namaBulan(bulan)}_${tahun}.pdf`,
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  await html2pdf().from(element).set(opt).save();
+}
 
 // ========================================================
 //            REKAP PELANGGARAN (Admin)
@@ -1932,7 +2498,33 @@ onValue(auditRef, snap => {
       callback(arr);
     }, err=>{ console.error(err); callback([]); });
   };
+  // =========================
+  //  PERKEMBANGAN DIMENSI CAHAYA
+  // =========================
+  const perkembanganRef = ref(db, 'perkembanganCahaya');
+  onValue(perkembanganRef, snap=>{
+    const data = snap.val() || {};
+    window.perkembanganCahayaList = Object.keys(data).map(k=>data[k]);
+    console.log('Perkembangan CAHAYA loaded:', window.perkembanganCahayaList);
+  });
 
+  window.simpanPerkembanganCahayaOnline = function(entry){
+    try{
+      push(ref(db,'perkembanganCahaya'), entry);
+    } catch(e){
+      console.error(e);
+      alert('Gagal simpan Perkembangan Dimensi CAHAYA: ' + (e.message || e));
+    }
+  };
+
+  window.loadAllPerkembanganCahaya = function(callback){
+    const r = ref(db, 'perkembanganCahaya');
+    onValue(r, snapshot=>{
+      const data = snapshot.val() || {};
+      const arr = Object.keys(data).map(k=>data[k]);
+      callback(arr);
+    }, err=>{ console.error(err); callback([]); });
+  };
   console.log("Firebase module loaded successfully.");
 </script>
 
@@ -1955,6 +2547,198 @@ function simpanKasus(){
   window.simpanKasusOnline(entry);
   alert('Kasus disimpan.');
   showSection('adminPage');
+}
+</script>
+<!-- PATCH: Perbaikan Hitung Otomatis & Simpan Perkembangan Dimensi CAHAYA -->
+<script>
+// ==========================
+// 1. HITUNG RATA-RATA OTOMATIS
+// ==========================
+function hitungRataRata(dimensiId) {
+  const selects = document.querySelectorAll(`#${dimensiId} select.skorIndikator`);
+  let total = 0;
+  let count = 0;
+
+  selects.forEach(sel => {
+    const val = parseFloat(sel.value || 0);
+    total += val;
+    count++;
+  });
+
+  const rata = count > 0 ? (total / count).toFixed(2) : 0;
+  const outputRata = document.querySelector(`#${dimensiId} .rataRata`);
+  const outputPred = document.querySelector(`#${dimensiId} .predikat`);
+
+  if (outputRata) outputRata.textContent = rata;
+  if (outputPred) {
+    let pred = "-";
+    const n = parseFloat(rata);
+    if (n >= 2.6) pred = "Sangat Baik";
+    else if (n >= 1.8) pred = "Baik";
+    else if (n >= 1.0) pred = "Cukup";
+    else if (n > 0) pred = "Kurang Baik";
+    outputPred.textContent = pred;
+  }
+}
+
+// Event listener otomatis untuk semua dropdown skor
+document.addEventListener("change", (e) => {
+  if (e.target.classList.contains("skorIndikator")) {
+    const dimensi = e.target.closest(".dimensiCahaya");
+    if (dimensi) hitungRataRata(dimensi.id);
+  }
+});
+
+// ==========================
+// 2. SIMPAN PERKEMBANGAN CAHAYA KE FIREBASE
+// ==========================
+function simpanPerkembangan() {
+  const naqib = currentUser?.naqibName || "-";
+  const tanggal = new Date().toISOString().slice(0,10);
+  const santri = document.getElementById("asesmenSantri")?.value || "-";
+
+  const data = {
+    tanggal,
+    naqib,
+    santri,
+    akhlak: ambilDataDimensi("dimAkhlakMulia"),
+    hati: ambilDataDimensi("dimHatiBersih"),
+    fisik: ambilDataDimensi("dimFisikBerdaya"),
+    waktu: Date.now()
+  };
+
+  if (!santri || santri === "-") return alert("Pilih santri terlebih dahulu.");
+  if (!window.simpanPerkembanganOnline) return alert("Firebase belum terhubung untuk penyimpanan.");
+
+  window.simpanPerkembanganOnline(data);
+  alert("Perkembangan Dimensi CAHAYA berhasil disimpan!");
+  showSection("naqibDashboard");
+}
+
+// Ambil data lengkap per dimensi (rata-rata, predikat, catatan, rekomendasi)
+function ambilDataDimensi(id) {
+  const el = document.getElementById(id);
+  if (!el) return {};
+
+  const rata = el.querySelector(".rataRata")?.textContent || "0";
+  const pred = el.querySelector(".predikat")?.textContent || "-";
+  const catatan = el.querySelector(".catatan")?.value || "";
+  const rekom = el.querySelector(".rekomendasi")?.value || "";
+
+  return { rata, pred, catatan, rekom };
+}
+
+// ==========================
+// 3. SIMPAN KE FIREBASE
+// ==========================
+window.simpanPerkembanganOnline = function(entry){
+  try {
+    const dbref = firebase.database().ref("perkembanganCahaya");
+    dbref.push(entry);
+  } catch(e) {
+    console.error(e);
+    alert("Gagal menyimpan perkembangan: " + e.message);
+  }
+};
+</script>
+<script>
+// ===============================
+//  HITUNG RATA-RATA DIMENSI CAHAYA
+//  (Akhlak, Hati, Fisik) OTOMATIS
+// ===============================
+function updatePerkembanganDimensi() {
+  // Daftar dimensi yang dipakai di form
+  const dimList = ["akhlak", "hati", "fisik"];
+
+  dimList.forEach(dim => {
+    // Ambil semua select untuk dimensi ini
+    const selects = document.querySelectorAll(
+      'select.perk-skor[data-dim="' + dim + '"]'
+    );
+
+    let total = 0;
+    let count = 0;
+
+    selects.forEach(sel => {
+      const v = parseFloat(sel.value || "0");
+      if (!isNaN(v)) {
+        total += v;
+        count++;
+      }
+    });
+
+    const avg = count > 0 ? total / count : 0;
+    const avgStr = avg.toFixed(2);
+    const pred = typeof skorToPredikat === "function"
+      ? skorToPredikat(avg)
+      : "-";
+
+    // Tembakkan ke span & hidden sesuai dimensi
+    if (dim === "akhlak") {
+      const avgEl = document.getElementById("perkAkhlakAvg");
+      const predLabel = document.getElementById("perkAkhlakPredikatLabel");
+      const predHidden = document.getElementById("perkAkhlakPredikat");
+      if (avgEl) avgEl.textContent = avgStr;
+      if (predLabel) predLabel.textContent = pred;
+      if (predHidden) predHidden.value = pred;
+    } else if (dim === "hati") {
+      const avgEl = document.getElementById("perkHatiAvg");
+      const predLabel = document.getElementById("perkHatiPredikatLabel");
+      const predHidden = document.getElementById("perkHatiPredikat");
+      if (avgEl) avgEl.textContent = avgStr;
+      if (predLabel) predLabel.textContent = pred;
+      if (predHidden) predHidden.value = pred;
+    } else if (dim === "fisik") {
+      const avgEl = document.getElementById("perkFisikAvg");
+      const predLabel = document.getElementById("perkFisikPredikatLabel");
+      const predHidden = document.getElementById("perkFisikPredikat");
+      if (avgEl) avgEl.textContent = avgStr;
+      if (predLabel) predLabel.textContent = pred;
+      if (predHidden) predHidden.value = pred;
+    }
+  });
+}
+
+// Saat halaman selesai dimuat, pasang listener ke semua select di form CAHAYA
+document.addEventListener("DOMContentLoaded", function () {
+  const allSelects = document.querySelectorAll("select.perk-skor");
+  allSelects.forEach(sel => {
+    sel.addEventListener("change", updatePerkembanganDimensi);
+  });
+
+  // Hitung awal (biar tidak 0.00 terus kalau default nilainya diubah)
+  updatePerkembanganDimensi();
+});
+</script>
+<!-- Tambahkan library html2pdf -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+function exportLaporanBulananPDF(){
+  const hasil = document.getElementById('lapBulananHasil');
+  if(!hasil || hasil.innerHTML.trim() === ""){
+    alert("Tidak ada hasil laporan untuk diekspor.");
+    return;
+  }
+
+  const naqib = document.getElementById('bulananNaqib').value || "Semua";
+  const santri = document.getElementById('bulananSantri').value || "Semua";
+  const bulan = document.getElementById('bulananBulan').value;
+  const tahun = document.getElementById('bulananTahun').value;
+  const namaBulan = [
+    "Januari","Februari","Maret","April","Mei","Juni",
+    "Juli","Agustus","September","Oktober","November","Desember"
+  ][bulan] || "";
+
+  const opt = {
+    margin: 0.5,
+    filename: `Laporan_Bulanan_${santri}_${namaBulan}_${tahun}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().from(hasil).set(opt).save();
 }
 </script>
 
